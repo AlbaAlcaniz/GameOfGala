@@ -1,15 +1,25 @@
+# Import packages
 import tkinter as tk
 from tkinter import messagebox
 from PIL import ImageTk, Image
 import pygame
 from numpy import array
 
-# Explanation of the game
 class Explanation:
+    """Explanation of the minigame.
+    I read somewhere that the roots should be a class.
+    """
 
     def __init__(self, master):
+        """Initialize the explanation.
+
+        Args:
+            master (tkinter.Tk): initial window in which the mission is explained
+        """
+        # Make sure that the window appears on top
         master.attributes('-topmost', True)
-        # Export image
+
+        # Export and display the explanation image
         img1 = ImageTk.PhotoImage(image = Image.open("figures/1_valencia.png"))
         panel = tk.Label(master, image = img1)
         panel.img1 = img1        
@@ -26,27 +36,46 @@ class Explanation:
         self.button.img2 = img2
         self.button.pack(expand=1)
         
+        # Initialize the window
         master.mainloop()
 
-# Class for drawing of the car
 class vehicle(object):
-    width = 450    
-    rows = 15
+    """Class for the moving and drawing the car
+    """
     def __init__(self, start, dirnx = 1, dirny = 0):
+        """Initialize the car
+
+        Args:
+            start (tuple): initial position of the car
+            dirnx (int, optional): x direction for the car movement. Defaults to 1.
+            dirny (int, optional): y direction for the car movement. Defaults to 0.
+        """
         self.pos = start
         self.dirnx = 1
         self.dirny = 0
 
     def move(self, dirnx, dirny):
+        """Function that moves the car
+
+        Args:
+            dirnx (int): x direction for the car movement
+            dirny (int): y direction for the car movement
+        """
         self.dirnx = dirnx
         self.dirny = dirny
         self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
 
     def draw_vehicle(self, surface):
-        dis = self.width // self.rows
+        """Draw the car
+
+        Args:
+            surface (pygame.Surface): window in which the car will be displayed
+        """
+        global width, rows
+        dis = width // rows #size of a square in the grid
         i = self.pos[0] #row
         j = self.pos[1] #column
-        color = (255,0,0)
+        color = (255,0,0) # Red
 
         # Define useful distances
         x_m = i*dis; y_m = j*dis+dis; x_M = x_m + dis
@@ -64,32 +93,45 @@ class vehicle(object):
         pygame.draw.circle(surface, (25,25,25), centre1, radius)
         pygame.draw.circle(surface, (25,25,25), centre2, radius)
 
-# Class for the movement of the car
 class car(object):
-    width = 450    
-    rows = 15
+    """Class for the movement of the car
+    """
     def __init__(self, pos):
+        """Initialize the movement of the car by creating the vehicle
+
+        Args:
+            pos (tuple): Initial position of the car
+        """
         self.head = vehicle(pos)
         # Direction for x and y
         self.dirnx = 0
         self.dirny = 1
+        # The trail are the positions in which the car has been
+        # Useful to keep track of the letters collected
         self.trail = [pos]
 
     def move(self):
+        """Function that determines the movement of the car
+        """
         # Take the car
         c = self.head
-        # Take the position of the car
+        # Take the car's position
         p = c.pos
         # Each position has an assigned letter which indicates the movements that the car can do
+        # These movements are limited by the walls of the labyrinth
+        # There is probably a better way to do it, but this is all myself
         matrix = ["hiimjhimmjaiimc","dhjfdfhgfeiijej","hgeohgejdhijeig", "eijfejbfhghghij", "higfhgfeghgagho", \
             "fhigejkijeiiigf","fdhmjegbfhchijf","eigfeiigfkigalg","hiighjhigeijhmj","ejhigeghimjffff","hgfhiijdbdelgff",\
                 "kjffbhghohiiigf","ffegkghgfeichio","feijejfbeijhgag","eiceilgeiigeiii"]
-        letter_pos = matrix[p[1]][p[0]]
+        letter_pos = matrix[p[1]][p[0]] #Letter assigned to the position of the car
         
+        # When the player interacts with the computer
         for event in pygame.event.get():
+            # If she wants to quit, let her quit
             if event.type == pygame.QUIT:
                 pygame.quit()
 
+            # Depending on the key pressed and the position of the car inside the labyrinth, the car moves
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT] and letter_pos in "gilimocj":
                 c.move(-1,0)
@@ -104,13 +146,28 @@ class car(object):
                 c.move(0,1)
             
     def draw_car(self, surface):
+        """Draw the car
+
+        Args:
+            surface (pygame.Surface): window in which the car will be displayed
+        """
         c = self.head
         c.draw_vehicle(surface)
     
     def draw_trail(self, surface):
-        dis = self.width // self.rows
+        """Draw the trail left by the car so that the collection of letters is easier
+
+        Args:
+            surface (pygame.Surface): window in which the trail will be displayed
+        """
+        global width, rows
+        # Size of each square in the grid
+        dis = width // rows
+        # Every movement of the car, add its position to the trail
         if self.head.pos not in self.trail:
             self.trail.append(self.head.pos)
+
+        # If the car has moved from the initial position, draw a grey line which represents its movement
         if len(self.trail) > 1:
             a = array(self.trail)*dis+dis/2
             a = a.astype(int)
@@ -118,19 +175,33 @@ class car(object):
                 pygame.draw.line(surface, (175,175,175), a[i], a[i+1], 3)
 
 class letter(object):
+    """Class for the letters that are displayed along the labyrinth
+    """
     def __init__(self):
+        """Initialize the letters
+        """
+        # Letters left along the labyrinth
         self.message = 'MAIGBIOSTFCGDCALXEU'
+        # Relative position of those letters
         self.pos = array([(1.5,2.5),(3.5,5.5),(0.5,8.5),(0.5,13),(5.5,7.5),(5.5,1.5),(6.5,3.5),(8.5,0.5),(13.5,0.5),\
             (14.5,3.5),(10.5,4.5),(9.5,6.5),(8.5,8.5),(9.5,9.5),(14.5,8.5),(13.5,10.5),(10.5,14.5),(6.5,10.5),(7.5,12.5)])
-        width = 450
-        rows = 15
-        dis = width // rows
+        
+        global width, rows
+        dis = width // rows #Width of a square of the grid
+        # The positions are shifted so that they are absolute with respect to the grid
         self.pos = array(self.pos)*dis
         self.pos = self.pos.astype(int)
         pygame.font.init()
+        #Determine the font of the letters
         self.font = pygame.font.SysFont('Comic Sans MS', 30)
 
     def display_letter(self,surface):
+        """Function which displays the letters along the labyrinth
+
+        Args:
+            surface (pygame.Surface): window in which the letters will be displayed
+        """
+        # Loop for plotting all the letters in the window
         i = 0
         for l in self.message:
             text = self.font.render(l, True, (0,255,0), (255,255,255))
@@ -139,8 +210,12 @@ class letter(object):
             surface.blit(text, textRect)
             i += 1
 
-# Function when the car has reached to the end
 def won_game():
+    """Function for when the car has reached the end of the labyrinth
+
+    Returns:
+        [type]: [description]
+    """
     # Create the main window
     # win = pygame.display.set_mode((500,500))
     # background = pygame.Surface((win.get_size()))
@@ -178,11 +253,17 @@ def won_game():
 
 
 
-def drawLabyrinth(width, rows, surface):
-    # How big each square is
+def drawLabyrinth(surface):
+    """Function which draws the labyrinth
+
+    Args:
+        surface (pygame.Surface): window in which the letters will be displayed
+    """
+    global width, rows
+    # How big each square of the grid is
     size_between = width // rows
     
-    color_lines = (0,0,0)
+    color_lines = (0,0,0) #Black
     # Define the horizontal lines of the labyrinth
     mat_x = [[0,0,15,0],[1,1,3,1],[0,2,1,2],[6,1,7,1],[10,1,13,1],[14,1,15,1],[4,2,5,2],[7,2,8,2],[9,2,12,2],[13,2,14,2],\
         [1,3,3,3],[5,3,7,3],[8,3,9,3],[10,3,11,3],[12,3,15,3],[0,4,2,4],[4,4,5,4],[9,4,10,4],[11,4,12,4],[13,4,14,4],\
@@ -190,8 +271,9 @@ def drawLabyrinth(width, rows, surface):
                 [12,7,13,7],[0,8,3,8],[4,8,8,8],[10,8,15,8],[1,9,4,9],[7,9,11,9],[0,10,1,10],[3,10,7,10],[8,10,9,10],\
                     [1,11,2,11],[4,11,6,11],[7,11,8,11],[9,11,13,11],[6,12,7,12],[10,12,14,12],[2,13,4,13],[5,13,6,13],\
                         [7,13,8,13],[9,13,12,13],[13,13,14,13],[1,14,3,14],[4,14,5,14],[8,14,10,14],[12,14,15,14],[0,15,15,15]]
-    mat_x = array(mat_x)
+    mat_x = array(mat_x) #Make it an array so each number can bemultiplied by size_between
     mat_x = mat_x*size_between
+
     # Define the vertical lines of the labyrinth
     mat_y = [[0,1,0,15],[1,1,1,2],[1,5,1,7],[1,12,1,14],[2,2,2,3],[2,6,2,7],[2,9,2,13],[3,1,3,2],[3,3,3,5],[3,7,3,8],\
         [3,10,3,12],[3,14,3,15],[4,1,4,6],[4,7,4,9],[4,11,4,14],[5,0,5,2],[5,6,5,7],[5,9,5,10],[5,11,5,12],[6,1,6,6],\
@@ -199,8 +281,9 @@ def drawLabyrinth(width, rows, surface):
                 [8,12,8,14],[9,1,9,3],[9,4,9,9],[9,10,9,13],[10,0,10,1],[10,3,10,4],[10,10,10,11],[11,4,11,5],[11,6,11,7],[11,9,11,10],\
                     [11,13,11,15],[12,2,12,4],[12,7,12,10],[12,12,12,13],[13,1,13,2],[13,4,13,5],[13,9,13,11],[13,13,13,14],\
                         [14,5,14,7],[14,9,14,12],[15,0,15,14]]
-    mat_y = array(mat_y)
+    mat_y = array(mat_y) #Make it an array so each number can bemultiplied by size_between
     mat_y = mat_y*size_between
+
     # Draw the lines of the labyrinth
     for i in range(len(mat_x)):
         pygame.draw.line(surface, color_lines, (mat_x[i][0], mat_x[i][1]), (mat_x[i][2],mat_x[i][3]), 3)
@@ -210,55 +293,61 @@ def drawLabyrinth(width, rows, surface):
     pass    
 
 def redrawWindow(surface):
-    global rows, width, c, l
-    color_surface = (255,255,255)
-    surface.fill(color_surface)
-    c.draw_trail(surface)
-    l.display_letter(surface)
-    c.draw_car(surface)
-    drawLabyrinth(width, rows, surface)
-    pygame.display.update()
+    """On every frame, redraw all the elements of the pygame window
+
+    Args:
+        surface (pygame.Surface): window in which the letters will be displayed
+    """
+    # Make the car and letters global
+    global c, l
+    color_surface = (255,255,255) #White
+    surface.fill(color_surface) #White background
+    c.draw_trail(surface) #Draw the trail left by the car
+    l.display_letter(surface) #Display the letters
+    c.draw_car(surface) #Draw the car
+    drawLabyrinth(surface) #Draw the lines of the labyrinth
+    pygame.display.update() #Update the window
 
     pass
 
-def main():
+def main_labyrinth():
+    """Main function which connects all the rest and displays the main directions for the game
+    """
+    # Make several variables global, such as the car (c) or the letters (l)
     global width, rows, c, l
+
+    # Explain the mission
     # root = tk.Tk()
     # Explanation(root)
     # root.destroy()
 
     # Rows needs to divide evenly by width
-    width = 450    
-    rows = 15
+    width = 450; rows = 15
+    # Create the pygame window where everything will be displayed
     win = pygame.display.set_mode((width, width))
-    background = pygame.Surface((win.get_size()))
-    background.fill((255, 255, 255))
-    image = pygame.image.load("figures/1_labyrinth.png")
-
-    image = image.convert()
-    rect = image.get_rect()
-    win.blit(image, rect)
-
-    c = car((13,14))
+    #Initialize the car and the letters
+    c = car((11,14))
     l = letter()
 
-    flag = True
+    flag = True #Variable which is true as long as you don't reach the end of the labyrinth
 
-    clock = pygame.time.Clock()
+    clock = pygame.time.Clock() #game's clock
 
     while flag:
         # The two below commands play with the velocity of the game
         pygame.time.delay(1)
-        #Makes sure that the game runs at 10 frame per second
         clock.tick(10)
+
         #Car moves
         c.move()
 
+        # If you reach the end of the labyrinth, you won
         if c.head.pos == (14,14):
-            # print('You won!')
             won_game()
 
+        # redraw the window onevery frame
         redrawWindow(win)
     pass
 
-main()
+# Initialize the game
+main_labyrinth()
