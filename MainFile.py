@@ -3,6 +3,9 @@ import pygame
 import tkinter as tk
 from PIL import ImageTk, Image
 
+#Import the minigames
+from Labyrinth import main_labyrinth
+
 def start_game():
     """Function for the beginning of the game, where I ask the player for help
     """
@@ -106,5 +109,6 @@ def main():
     main_mission("figures/0_miguelina.png","figures/0_next.png",(50,50),'right')
     main_mission("figures/0_alcanicil.png","figures/0_next.png",(50,50),'right')
     main_mission("figures/0_letsgo.png","figures/0_letsgobutton.png",(567,122),'bottom')
+    main_labyrinth()
 
 main()
