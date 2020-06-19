@@ -39,33 +39,62 @@ class Explanation:
         # Initialize the window
         master.mainloop()
 
-class vehicle(object):
-    """Class for the moving and drawing the car
+class car(object):
+    """Class for the movement of the car
     """
-    def __init__(self, start, dirnx = 1, dirny = 0):
-        """Initialize the car
+    def __init__(self, start):
+        """Initialize the movement of the car by creating the vehicle
 
         Args:
-            start (tuple): initial position of the car
-            dirnx (int, optional): x direction for the car movement. Defaults to 1.
-            dirny (int, optional): y direction for the car movement. Defaults to 0.
+            start (tuple): Initial position of the car
         """
-        self.pos = start
-        self.dirnx = 1
-        self.dirny = 0
+        # Initial position of the car
+        self.pos = start 
+        # Direction for x and y
+        self.dirnx = 0
+        self.dirny = 1
+        # The trail are the positions in which the car has been
+        # Useful to keep track of the letters collected
+        self.trail = [self.pos]
 
-    def move(self, dirnx, dirny):
-        """Function that moves the car
-
-        Args:
-            dirnx (int): x direction for the car movement
-            dirny (int): y direction for the car movement
+    def move(self):
+        """Function that determines the movement of the car
         """
-        self.dirnx = dirnx
-        self.dirny = dirny
-        self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+        # Take the car's position
+        p = self.pos
+        # Each position has an assigned letter which indicates the movements that the car can do
+        # These movements are limited by the walls of the labyrinth
+        # There is probably a better way to do it, but this is all myself
+        matrix = ["hiimjhimmjaiimc","dhjfdfhgfeiijej","hgeohgejdhijeig", "eijfejbfhghghij", "higfhgfeghgagho", \
+            "fhigejkijeiiigf","fdhmjegbfhchijf","eigfeiigfkigalg","hiighjhigeijhmj","ejhigeghimjffff","hgfhiijdbdelgff",\
+                "kjffbhghohiiigf","ffegkghgfeichio","feijejfbeijhgag","eiceilgeiigeiii"]
+        letter_pos = matrix[p[1]][p[0]] #Letter assigned to the position of the car
+        
+        # When the player interacts with the computer
+        for event in pygame.event.get():
+            # If she wants to quit, let her quit
+            if event.type == pygame.QUIT:
+                pygame.quit()
 
-    def draw_vehicle(self, surface):
+            # Depending on the key pressed and the position of the car inside the labyrinth, the car moves
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT] and letter_pos in "gilimocj":
+                self.dirnx = -1; self.dirny = 0
+                self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+
+            elif keys[pygame.K_RIGHT] and letter_pos in "kalmehi":
+                self.dirnx = 1; self.dirny = 0
+                self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+
+            elif keys[pygame.K_UP] and letter_pos in "delfgko":
+                self.dirnx = 0; self.dirny = -1
+                self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+
+            elif keys[pygame.K_DOWN] and letter_pos in "bfhjmko":
+                self.dirnx = 0; self.dirny = 1
+                self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+            
+    def draw_car(self, surface):
         """Draw the car
 
         Args:
@@ -92,67 +121,6 @@ class vehicle(object):
         radius = 4
         pygame.draw.circle(surface, (25,25,25), centre1, radius)
         pygame.draw.circle(surface, (25,25,25), centre2, radius)
-
-class car(object):
-    """Class for the movement of the car
-    """
-    def __init__(self, pos):
-        """Initialize the movement of the car by creating the vehicle
-
-        Args:
-            pos (tuple): Initial position of the car
-        """
-        self.head = vehicle(pos)
-        # Direction for x and y
-        self.dirnx = 0
-        self.dirny = 1
-        # The trail are the positions in which the car has been
-        # Useful to keep track of the letters collected
-        self.trail = [pos]
-
-    def move(self):
-        """Function that determines the movement of the car
-        """
-        # Take the car
-        c = self.head
-        # Take the car's position
-        p = c.pos
-        # Each position has an assigned letter which indicates the movements that the car can do
-        # These movements are limited by the walls of the labyrinth
-        # There is probably a better way to do it, but this is all myself
-        matrix = ["hiimjhimmjaiimc","dhjfdfhgfeiijej","hgeohgejdhijeig", "eijfejbfhghghij", "higfhgfeghgagho", \
-            "fhigejkijeiiigf","fdhmjegbfhchijf","eigfeiigfkigalg","hiighjhigeijhmj","ejhigeghimjffff","hgfhiijdbdelgff",\
-                "kjffbhghohiiigf","ffegkghgfeichio","feijejfbeijhgag","eiceilgeiigeiii"]
-        letter_pos = matrix[p[1]][p[0]] #Letter assigned to the position of the car
-        
-        # When the player interacts with the computer
-        for event in pygame.event.get():
-            # If she wants to quit, let her quit
-            if event.type == pygame.QUIT:
-                pygame.quit()
-
-            # Depending on the key pressed and the position of the car inside the labyrinth, the car moves
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT] and letter_pos in "gilimocj":
-                c.move(-1,0)
-
-            elif keys[pygame.K_RIGHT] and letter_pos in "kalmehi":
-                c.move(1,0)
-
-            elif keys[pygame.K_UP] and letter_pos in "delfgko":
-                c.move(0,-1)
-
-            elif keys[pygame.K_DOWN] and letter_pos in "bfhjmko":
-                c.move(0,1)
-            
-    def draw_car(self, surface):
-        """Draw the car
-
-        Args:
-            surface (pygame.Surface): window in which the car will be displayed
-        """
-        c = self.head
-        c.draw_vehicle(surface)
     
     def draw_trail(self, surface):
         """Draw the trail left by the car so that the collection of letters is easier
@@ -164,8 +132,8 @@ class car(object):
         # Size of each square in the grid
         dis = width // rows
         # Every movement of the car, add its position to the trail
-        if self.head.pos not in self.trail:
-            self.trail.append(self.head.pos)
+        if self.pos not in self.trail:
+            self.trail.append(self.pos)
 
         # If the car has moved from the initial position, draw a grey line which represents its movement
         if len(self.trail) > 1:
@@ -326,7 +294,7 @@ def main_labyrinth():
     # Create the pygame window where everything will be displayed
     win = pygame.display.set_mode((width, width))
     #Initialize the car and the letters
-    c = car((11,14))
+    c = car((7,14))
     l = letter()
 
     flag = True #Variable which is true as long as you don't reach the end of the labyrinth
@@ -342,7 +310,7 @@ def main_labyrinth():
         c.move()
 
         # If you reach the end of the labyrinth, you won
-        if c.head.pos == (14,14):
+        if c.pos == (14,14):
             won_game()
 
         # redraw the window onevery frame
