@@ -1,5 +1,7 @@
 # Game of Gala
 
-For my cousin's daughter birthday, I was planning to make a small game. In it, she would have to win a series of minigames, each of which will give her a message. On it, she will learn while playing. But, let's be realistic, the person who's going to take the most ouf of it is myself. But it feels nice to do something for someone you love.
+For my cousin's daughter birthday, I was planning to make a small game. In it, she would have to win a series of minigames, each of which will give her a piece of message. Overall, she would find the message she needs to complete the story. The pictures have some text in Spanish, because she is 7 so I can't do it in English.
 
-The characters of the game are my family. Since I'm not really sure they want to be public, I just removed them by pictures from the internet.
+That story is an adventure which involves all the members of my family. Since I'm not sure they want to be public, I just substituted their fotos by pictures from the internet.
+
+There are several files to make this game. Each of the minigames will be a file. So far I only have a labyrinth. And then the MainFile connects them all. There are also many pictures kept on the folder data.
