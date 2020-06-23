@@ -106,9 +106,9 @@ def main():
     """Main function for the game which connects all minigames
     """
     start_game()
-    main_mission("figures/0_miguelina.png","figures/0_next.png",(50,50),'right')
-    main_mission("figures/0_alcanicil.png","figures/0_next.png",(50,50),'right')
-    main_mission("figures/0_letsgo.png","figures/0_letsgobutton.png",(567,122),'bottom')
-    main_labyrinth()
+    # main_mission("figures/0_miguelina.png","figures/0_next.png",(50,50),'right')
+    # main_mission("figures/0_alcanicil.png","figures/0_next.png",(50,50),'right')
+    # main_mission("figures/0_letsgo.png","figures/0_letsgobutton.png",(567,122),'bottom')
+    miedica = main_labyrinth()
 
 main()

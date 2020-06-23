@@ -180,46 +180,63 @@ class letter(object):
 
 def won_game():
     """Function for when the car has reached the end of the labyrinth
-
-    Returns:
-        [type]: [description]
+    The player needs to submit the message she has found
     """
-    # Create the main window
-    # win = pygame.display.set_mode((500,500))
-    # background = pygame.Surface((win.get_size()))
-    # background.fill((255, 255, 255))
-    # image = pygame.image.load("figures/1_labyrinth.png")
 
-    # image = image.convert()
-    # rect = image.get_rect()
-    # win.blit(image, rect)
-
-    #Make sure that the window appears on top
+    #Create the tkinter window
     root = tk.Tk()
+    #Make sure that the window appears on top
     root.attributes('-topmost', True)
 
-    # Export image: I need your help
-    img1 = ImageTk.PhotoImage(image = Image.open("figures/0_ayuda.png"))
+    def message_box():
+        #Make sure that the window appears on top
+        root = tk.Tk()
+        root.attributes('-topmost', True)
+        root.withdraw()
+        messagebox.showinfo('Oh oh', 'Mensaje incorrecto. Intentalo otra vez!')
+        try:
+            root.destroy()
+        except:
+            pass
+
+    def retrieve_input():
+        """Function that gets the string written in the text box if that string is correct
+        """
+        # Get the message written in the textBox
+        # The "1.0" implies that the message is read from the first line, character zero
+        # end-1c implies reading until the end of the entry, except for an automatically created last character
+        inputValue=textBox.get("1.0","end-1c")
+        
+        if inputValue.upper() == 'MIEDICA':
+            #If the message coincides with the right answer, destroy the root and onto the next minigame!
+            root.destroy()
+        else:
+            # If the message doesn't coincide, warn the player
+            message_box()
+
+    # Export image: Congrats!
+    img1 = ImageTk.PhotoImage(image = Image.open("figures/1_felicidades.png"))
     panel = tk.Label(root, image = img1)
     panel.pack()
-    # root.withdraw()
-
-    # for event in pygame.event.get():
-    #     keys = pygame.key.get_pressed()
-    #     if keys[pygame.K_LEFT]:
-    #         print('Gotcha!')
-    root.mainloop()
     
-    # content = 'You lost. Your score was '
-    # MsgBox = messagebox.askquestion (content,'Play again?')
-    # if MsgBox == 'yes':
-    #     root.destroy()
-    #     # walls, rot_apple_on, pois_apple_on = s.reset((10,10))
-    #     # return walls, rot_apple_on, pois_apple_on
-    # else:
-    #     exit()
+    # Create the text space where the message can be written
+    textBox=tk.Text(root, height=1, width=20, font=("Helvetica", 32))
+    textBox.pack(side = 'left')
 
+    # Create the button for when the message is ready
+    img2 = ImageTk.PhotoImage(Image.open("figures/0_next.png"))
+    # Define the space for the button
+    f = tk.Frame(root, height=50, width=50)
+    f.pack_propagate(0)
+    f.pack(side = 'right')
+    # Create button
+    #command=lambda: retrieve_input() >>> just means do this when i press the button
+    buttonCommit=tk.Button(f, image = img2, command=lambda: retrieve_input())
+    buttonCommit.pack(expand=1)
 
+    root.mainloop()
+
+    pass
 
 def drawLabyrinth(surface):
     """Function which draws the labyrinth
@@ -294,7 +311,7 @@ def main_labyrinth():
     # Create the pygame window where everything will be displayed
     win = pygame.display.set_mode((width, width))
     #Initialize the car and the letters
-    c = car((7,14))
+    c = car((11,14))
     l = letter()
 
     flag = True #Variable which is true as long as you don't reach the end of the labyrinth
@@ -312,10 +329,11 @@ def main_labyrinth():
         # If you reach the end of the labyrinth, you won
         if c.pos == (14,14):
             won_game()
+            return 'miedica'
 
         # redraw the window onevery frame
         redrawWindow(win)
     pass
 
 # Initialize the game
-main_labyrinth()
+# main_labyrinth()
