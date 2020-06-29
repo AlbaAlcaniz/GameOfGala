@@ -49,6 +49,8 @@ def series_function():
     master2.attributes('-topmost', True)
 
     def message_box():
+        """Function that generates a warning message in case the message is not correct
+        """
         #Make sure that the window appears on top
         root = tk.Tk()
         root.attributes('-topmost', True)
@@ -105,7 +107,7 @@ def series_function():
 
     pass
 
-
+# Failed experiments with classes
 class Series:
     """Minigame where the player needs to complete the numerical series and relate the numbers obtained with the 
     letters of the alphabet.
@@ -198,6 +200,7 @@ class Series:
 
         master.mainloop()
 
+# Failed experiments with classes
 class Alphabet:
     """Minigame where the player needs to complete the numerical series and relate the numbers obtained with the 
     letters of the alphabet.
@@ -239,13 +242,6 @@ def main_series():
     # Start the series game
     series_function()
 
-    # root2 = tk.Tk()
-    # s = Series(root2)
-    # s.alphabet(root2)
-    # Alphabet(root3)
-    # root2.destroy()
-    # root3.destroy()
-
     # Thank you for fulfilling the mission
     root1 = tk.Tk()
     Explanation(root1, "figures/2_gracias.png")
@@ -254,4 +250,4 @@ def main_series():
     pass
 
 # Initialize the game
-main_series()
+# main_series()

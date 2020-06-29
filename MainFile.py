@@ -5,6 +5,8 @@ from PIL import ImageTk, Image
 
 #Import the minigames
 from Labyrinth import main_labyrinth
+from Series import main_series
+from futbol import main_futbol
 
 def start_game():
     """Function for the beginning of the game, where I ask the player for help
@@ -105,10 +107,16 @@ def main_mission(image_root,button_root,button_size,button_side):
 def main():
     """Main function for the game which connects all minigames
     """
+    # Explanation of the main mission
     start_game()
-    # main_mission("figures/0_miguelina.png","figures/0_next.png",(50,50),'right')
-    # main_mission("figures/0_alcanicil.png","figures/0_next.png",(50,50),'right')
-    # main_mission("figures/0_letsgo.png","figures/0_letsgobutton.png",(567,122),'bottom')
-    miedica = main_labyrinth()
+    main_mission("figures/0_miguelina.png","figures/0_next.png",(50,50),'right')
+    main_mission("figures/0_alcanicil.png","figures/0_next.png",(50,50),'right')
+    main_mission("figures/0_letsgo.png","figures/0_letsgobutton.png",(567,122),'bottom')
+
+    # Minigames
+    main_futbol()
+    main_series() #es un
+    main_labyrinth() #miedica
+    
 
 main()

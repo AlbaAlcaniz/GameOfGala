@@ -302,16 +302,16 @@ def main_labyrinth():
     global width, rows, c, l
 
     # Explain the mission
-    # root = tk.Tk()
-    # Explanation(root)
-    # root.destroy()
+    root = tk.Tk()
+    Explanation(root)
+    root.destroy()
 
     # Rows needs to divide evenly by width
     width = 450; rows = 15
     # Create the pygame window where everything will be displayed
     win = pygame.display.set_mode((width, width))
     #Initialize the car and the letters
-    c = car((11,14))
+    c = car((0,0))
     l = letter()
 
     flag = True #Variable which is true as long as you don't reach the end of the labyrinth
