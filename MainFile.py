@@ -7,6 +7,7 @@ from PIL import ImageTk, Image
 from Labyrinth import main_labyrinth
 from Series import main_series
 from futbol import main_futbol
+from crossword import main_crossword
 
 def start_game():
     """Function for the beginning of the game, where I ask the player for help
@@ -117,6 +118,8 @@ def main():
     main_futbol()
     main_series() #es un
     main_labyrinth() #miedica
+
+    main_crossword() #noches
     
 
 main()
