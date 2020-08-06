@@ -1,6 +1,6 @@
 from turtle import Turtle, Screen
 from pipelines_aux import draw_pipe_aux
-from math import ceil, floor, pi, cos, sin
+from math import floor, pi
 import tkinter
 
 class MovablePipe(Turtle):
