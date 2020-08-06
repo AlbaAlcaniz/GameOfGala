@@ -1,19 +1,32 @@
-from tkinter import *
 
-master = Tk()
+from math import pi
+cardinal_points = {
+    "WN" : 0,
+    "EN" : pi/2,
+    "ES" : pi,
+    "WS" : 3*pi/2,
+}
+points_cardinal = {value:key for (key,value) in cardinal_points.items()}
+# points_cardinal = {cardinal_points[x]: x for x in cardinal_points}
+print(points_cardinal)
+#################
 
-e = Entry(master)
-e.pack()
+# from tkinter import *
 
-e.focus_set()
+# master = Tk()
 
-def callback():
-    print(e.get())
+# e = Entry(master)
+# e.pack()
 
-b = Button(master, text="get", width=10, command=callback)
-b.pack()
+# e.focus_set()
 
-mainloop()
+# def callback():
+#     print(e.get())
+
+# b = Button(master, text="get", width=10, command=callback)
+# b.pack()
+
+# mainloop()
 
 #####################
 

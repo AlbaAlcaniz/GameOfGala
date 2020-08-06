@@ -1,142 +1,153 @@
 from turtle import Turtle, Screen
+from pipelines_aux import draw_pipe_aux
+from math import ceil, floor, pi, cos, sin
+import tkinter
 
-ws = Screen()
-
-ws.bgpic('figures/5_pipelines_background.PNG')
 screen_width = 490
 number_lines = 7
 square_width = screen_width/number_lines
 
-pipe = Turtle()
-pipe.speed(10)
-pipe.pensize(2)
-pipe.color('green')
-pipe.fillcolor('green')
-# pipe.penup()
+ws = Screen()
+ws.screensize(screen_width,screen_width)
+ws.bgpic('figures/5_pipelines_background.PNG')
+    
+class MovableBendedPipe(Turtle):
+    cardinal_points = {
+        "WN" : 0,
+        "EN" : pi/2,
+        "ES" : pi,
+        "WS" : 3*pi/2,
+    }
+    # points_cardinal = {cardinal_points[x]: x for x in cardinal_points}
+    def __init__(self,position,orientation,correct_orientation):
+        super().__init__()
+        self.ht()
+        self.color('black')
+        self.fillcolor('green')
+        self.position = position
+        self.speed(0)
+        self.pensize(2)
+        self.penup()
+        self.goto(self.position)
+        self.orientation = orientation
+        self.correct_orientation = correct_orientation
+        self.cardinal2number()
+        draw_pipe_aux(self,self.orientation)
+
+    def turn_pipe(self):
+        self.orientation_angle += pi/2
+        self.number2cardinal()
+        self.clear()
+        draw_pipe_aux(self,self.orientation)
+
+    def cardinal2number(self):
+        self.orientation_angle = self.cardinal_points[self.orientation]
+
+    def number2cardinal(self):
+        self.orientation_angle = self.orientation_angle - 2*pi*floor(self.orientation_angle/(2*pi))
+        for orient, orient_angle in self.cardinal_points.items():
+            if self.orientation_angle == orient_angle:
+                self.orientation = orient
+
+class MovableStraightPipe(Turtle):
+    def __init__(self,position,orientation,correct_orientation):
+        super().__init__()
+        self.ht()
+        self.color('black')
+        self.fillcolor('green')
+        self.position = position
+        self.speed(0.01)
+        self.pensize(2)
+        self.penup()
+        self.goto(self.position)
+        self.orientation = orientation
+        self.correct_orientation = correct_orientation
+        draw_pipe_aux(self,self.orientation)
+
+    def turn_pipe(self):
+        if self.orientation == 'v':
+            self.orientation = 'h'
+        else:
+            self.orientation = 'v'
+        self.clear()
+        draw_pipe_aux(self,self.orientation)
 
 def move_turtle(pipe_turtle,x_square, y_square):
     x_pos = (x_square-1/2)*square_width - screen_width/2
-    y_pos = (y_square-1/2)*square_width + screen_width/2
+    y_pos = screen_width/2 - (y_square-1/2)*square_width
     pipe_turtle.goto(x_pos,y_pos)
 
-move_turtle(pipe,1,1)
-# move_turtle(pipe,7,7)
-# move_turtle(pipe,1,7)
+########### GOOD ONES
+# mov_bend_pipes_positions = [
+#     [-210,70],[-140,140],[-70,70],[210,70],[0,70],[140,140],[210,-140],[140,-70],[-70,-70],[70,0],
+#     [70,-140],[-140,0],[210,0],[-70,0]
+#     ]
+# mov_bend_pipes_corr_orientations = ['EN', 'WN', 'WN', 'WN', 'EN', 'WS', 'WN', 'WS', 'EN', 'WS', 'WN', 'WS', 'WS', 'ES']
+# mov_bend_pipes_orientations = ['WN','WS','ES','WS','WN','WN','WS','WS','ES','EN','WS','EN','WN','WN']
+########### TEMPORARY ONES
+mov_bend_pipes_positions = [[-210,70],[-140,140]]
+mov_bend_pipes_corr_orientations = ['EN','WN']
+mov_bend_pipes_orientations = ['WN','WS']
 
-class Pipeline:
-    def __init__(self,turtle_speed = 2):
-        self.turtle_speed = turtle_speed
-        self.pipe = Turtle()
-        self.pipe.speed(self.turtle_speed)
-        self.pipe.pensize(2)
-        self.pipe.color('black')
-        self.pipe.fillcolor('gray')
-        self.pipe.penup()
+i = 0; mov_bend_pipes_id = []
+for pos in mov_bend_pipes_positions:
+    mov_bend_pipes_id.append(str(int(pos[0]))+'_'+str(int(pos[1])))
 
-class DrawPipe(Pipeline):
-    x_joint = 10
-    y_joint = 25
-    x_pipe = 50
-    y_pipe = 10
-    ext_radius = 35
-    int_radius = ext_radius-y_pipe
-    square_size = x_pipe+2*x_joint
+i = 0; d_bend = {}; d_bend_corr = {}
+for pipe_id in mov_bend_pipes_id:
+    d_bend[pipe_id] = MovableBendedPipe(mov_bend_pipes_positions[i],mov_bend_pipes_orientations[i],\
+        mov_bend_pipes_corr_orientations[i])
+    if d_bend[pipe_id].correct_orientation == d_bend[pipe_id].orientation:
+        d_bend_corr[pipe_id] = True
+    else:
+        d_bend_corr[pipe_id] = False
+    i += 1
 
-    if square_size != square_width:
-        print('BE CAREFUUUUUUUUUUL')
+########### GOOD ONES
+# mov_str_pipes_positions = [
+#     [-140,70],[140,210],[70,-210],[-70,-140],[-70,-210],[-140,-70],[-210,-70]
+#     ]
+# mov_str_pipes_corr_orientations = ['h', 'h', 'h', 'h', 'h', 'v', 'v']
+# mov_str_pipes_orientations = ['v','v','v','v','v','h','h']
+########### TEMPORARY ONES
+mov_str_pipes_positions = [[-140,70],[140,210]]
+mov_str_pipes_corr_orientations = ['h', 'h']
+mov_str_pipes_orientations = ['v','v']
 
-    def end_circuit_pipe(self):
-        x_end_pipe = self.x_joint
-        radius_end_pipe = self.square_size-2*(x_end_pipe+self.x_joint)
-        self.pipe.circle(radius_end_pipe)
-        self.pipe.forward(self.y_joint) 
-        self.pipe.right(90) 
-        self.pipe.forward(self.x_joint) 
-        self.pipe.right(90)
+i = 0; mov_str_pipes_id = []
+for pos in mov_str_pipes_positions:
+    mov_str_pipes_id.append(str(int(pos[0]))+'_'+str(int(pos[1])))
 
-class MoveTurtle(Pipeline):
-    def move_to_center(self):
-        self.pipe.goto(-square_width*3,square_width*3)
+i = 0; d_str = {}; d_str_corr = {}
+for pipe_id in mov_str_pipes_id:
+    d_str[pipe_id] = MovableStraightPipe(mov_str_pipes_positions[i],mov_str_pipes_orientations[i],\
+        mov_str_pipes_corr_orientations[i])
+    if d_str[pipe_id].correct_orientation == d_str[pipe_id].orientation:
+        d_str_corr[pipe_id] = True
+    else:
+        d_str_corr[pipe_id] = False
+    i += 1
 
-    def move_west(self):
-        self.pipe.forward(square_width)
+def redraw_clicked_pipe(x_pos,y_pos):
+    x_pipe = floor(x_pos/square_width+0.5)*square_width
+    y_pipe = floor(y_pos/square_width+0.5)*square_width
+    if [x_pipe,y_pipe] in mov_bend_pipes_positions:
+        pipe_id = str(int(x_pipe))+'_'+str(int(y_pipe))
+        m = d_bend[pipe_id]
+        m.turn_pipe()
+        if m.orientation == m.correct_orientation:
+            d_bend_corr[pipe_id] = True
 
-    def move_east(self):
-        self.pipe.right(180)
-        self.pipe.forward(square_width)
+    if [x_pipe,y_pipe] in mov_str_pipes_positions:
+        pipe_id = str(int(x_pipe))+'_'+str(int(y_pipe))
+        m = d_str[pipe_id]
+        m.turn_pipe()
+        if m.orientation == m.correct_orientation:
+            d_str_corr[pipe_id] = True
 
-    def move_north(self):
-        self.pipe.left(90)
-        self.pipe.forward(square_width)
+    if all(value == True for value in d_bend_corr.values()) and all(value == True for value in d_str_corr.values()):
+        ws.bye()
 
-    def move_south(self):
-        self.pipe.right(90)
-        self.pipe.forward(square_width)
-
-
-# def pipeline():
-#     def draw_joint():
-#         pipe.forward(x_joint)
-#         pipe.right(90) 
-#         pipe.forward(y_joint) 
-#         pipe.right(90) 
-#         pipe.forward(x_joint) 
-#         pipe.right(90)
-
-#     # Vertical/horizontal (uncomment next line) pipe
-#     pipe.begin_fill()
-#     draw_joint()
-#     pipe.forward(y_joint) 
-#     pipe.right(90) 
-#     pipe.forward(x_joint) 
-#     pipe.right(90) 
-#     pipe.forward((y_joint-y_pipe)/2)
-#     pipe.left(90) 
-#     pipe.circle(int_radius,90)
-#     pipe.left(90) 
-#     pipe.forward((y_joint-y_pipe)/2) 
-#     pipe.right(90) 
-#     draw_joint()
-#     pipe.forward(y_joint)
-#     pipe.right(180)
-#     pipe.forward((y_joint-y_pipe)/2+y_pipe)
-#     pipe.left(90)
-#     pipe.circle(ext_radius,-90)
-#     pipe.end_fill()
-
-#     def draw_pipe():
-#         pipe.left(90) 
-#         pipe.forward(x_pipe)
-#         pipe.right(90) 
-#         pipe.forward(y_pipe) 
-#         pipe.right(90) 
-#         pipe.forward(x_pipe) 
-#         pipe.right(90)
-#         pipe.forward(y_pipe) 
-#         pipe.right(90) 
-#         pipe.forward(x_pipe) 
-#         pipe.left(90) 
-
-    # Vertical/horizontal (uncomment next line) pipe
-    # pipe.right(90)
-    # pipe.begin_fill()
-    # draw_joint()
-    # pipe.forward(y_joint) 
-    # pipe.right(90) 
-    # pipe.forward(x_joint) 
-    # pipe.right(90) 
-    # pipe.forward((y_joint-y_pipe)/2)
-    # draw_pipe()
-    # pipe.forward((y_joint-y_pipe)/2)
-    # pipe.right(90) 
-    # draw_joint()
-    # pipe.forward((y_joint-y_pipe)/2) 
-    # pipe.left(90)
-    # pipe.forward(x_pipe)       
-    # pipe.end_fill()
-   
-    # Command so that the program does not exist asa it finishes drawing
-    # ws = Screen()
-
-
-ws.exitonclick()
+ws.onclick(redraw_clicked_pipe)
+ws.listen()
+ws.mainloop()
