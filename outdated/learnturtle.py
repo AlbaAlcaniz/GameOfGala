@@ -1,7 +1,7 @@
 # Learn how to use the turtle module which deals with mouse interaction
 # Learned from https://pbaumgarten.com/python/turtle.md
-from turtle import Turtle, Screen
 import random
+from turtle import Turtle, Screen, register_shape
 
 # Change the shape of the turtle
 # flag.shape("turtle")
@@ -21,8 +21,7 @@ def olympic_flag():
     # Set the with of the objects drawn
     flag.pensize(4)
 
-    # In order to move the turtle without drawing, we need the command
-    # penup
+    # In order to move the turtle without drawing, we need the command penup
     flag.penup()
     flag.goto(-radius*2-margin,0)
     flag.pendown()
@@ -219,8 +218,43 @@ def pipeline():
     ws = Screen()
     ws.exitonclick()
 
+def water_project():
+    """Find the perfect water color for the pipelines background by comparing different blues
+    """
+    screen_width = 500
+
+    ws = Screen()
+    ws.screensize(screen_width,screen_width)
+    ws.bgcolor('cornflowerblue')
+
+    betty = Turtle()
+    betty.speed(10) # Set the speed of the turtle
+    betty.pensize(2) # Set the width of the objects drawn
+    # betty.color('black')
+    register_shape('figures/cohete.gif')
+    betty.shape('figures/cohete.gif')
+
+    # Bubbles
+    num_bubbles = 10; 
+    min_radius_bubbles = 10; max_radius_bubbles = 40
+    drawing_limit = (screen_width-max_radius_bubbles)/2
+    options = ['aquamarine','cyan','deepskyblue', 'skyblue', 'darkturquoise',\
+        'darkcyan','steelblue1']
+    for fill_color in options:
+        betty.fillcolor(fill_color); betty.color(fill_color)
+        for _ in range(num_bubbles):
+            betty.penup()
+            betty.goto(random.uniform(-drawing_limit, drawing_limit),random.uniform(-drawing_limit, drawing_limit))
+            betty.pendown()
+            betty.begin_fill()
+            betty.circle(random.uniform(-min_radius_bubbles, max_radius_bubbles))
+            betty.end_fill()
+
+    ws.exitonclick()
+
 
 #Run the desired project
 # olympic_flag()
 # pizza_project()
-pipeline()
+# pipeline()
+water_project()

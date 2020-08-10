@@ -19,7 +19,6 @@ def draw_pipe_aux(pipe, direction):
             Examples: 'east-north', 'west-south'
     """
 
-
     def draw_joint():
         """Auxiliar function to save some (small) space
         """
