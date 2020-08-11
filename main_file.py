@@ -162,6 +162,7 @@ def main():
     app.mainloop()
 
     # Minigames
+    # main_memory() #fernan
     main_futbol() #ducho
     main_series() #es un
     main_labyrinth() #miedica
