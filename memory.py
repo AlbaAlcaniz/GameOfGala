@@ -10,7 +10,7 @@ class Card():
     """
     global cards_size
 
-    def __init__(self,pos,number):
+    def __init__(self,pos,number,cards_size):
         """Initialize the card by giving its position inside the screen and the
         number that appears when it is turned.
 
@@ -19,6 +19,7 @@ class Card():
             number (int): number that is displayed when the card is turned
         """
         self.pos = pos
+        self.cards_size = cards_size
         self.color = (255,255,255)
         self.border_color = (255,0,0)
         self.border_width = 3
@@ -41,15 +42,15 @@ class Card():
         pygame.draw.rect(
             surface, self.border_color, 
             (self.pos[0]+self.margin, self.pos[1]+self.margin, \
-                cards_size[0]-2*self.margin,\
-                cards_size[1]-2*self.margin)
+                self.cards_size[0]-2*self.margin,\
+                self.cards_size[1]-2*self.margin)
         )
         pygame.draw.rect(
             surface, self.color, 
             (self.pos[0]+self.margin+self.border_width, \
                 self.pos[1]+self.margin+self.border_width, \
-                cards_size[0]-2*self.margin-2*self.border_width, \
-                cards_size[1]-2*self.margin-2*self.border_width)
+                self.cards_size[0]-2*self.margin-2*self.border_width, \
+                self.cards_size[1]-2*self.margin-2*self.border_width)
         )
 
     def turn(self,screen):
@@ -60,6 +61,7 @@ class Card():
             screen (pygame.Surface): window where the cards are displayed.
         """
         screen.blit(self.text, self.text_rect)
+
 
 class MainScreen():
     def __init__(self,screen_size):
@@ -102,27 +104,56 @@ class MainScreen():
             pygame.draw.rect(self.screen, self.text_color, self.cursor)
         pygame.display.update()
 
-def create_cards_dictionary():
-    """Function that creates a dictionary of the cards which are identified by
-    its position and the number that appears on each card is also displayed
 
-    Returns:
-        dictionary: already mentioned dictionary of cards
-    """
-    global cards_number, cards_distribution, cards_size
-    card_dict = {}; i = 0
-    card_number = array(range(1,int(cards_number/2)+1))
-    card_number = append(card_number,card_number)
-    shuffle(card_number)
-    for x in range(cards_distribution[0]):
-        for y in range(cards_distribution[1]):
-            pipe_id = str(cards_size[0]*x)+'_'+str(cards_size[1]*y)
-            card_dict[pipe_id] = [
-                Card([cards_size[0]*x,cards_size[1]*y],card_number[i]),
-                card_number[i]
+class Deck():
+    def __init__(self,screen_size):
+        # cards_distribution = [6,3]
+        self.cards_distribution = [2,1]
+        self.number_of_cards = prod(self.cards_distribution)
+        self.cards_size = [
+            int(x/y) for x, y in zip(screen_size,self.cards_distribution)
             ]
-            i += 1
-    return card_dict
+        self.create_cards_dictionary()
+        self.last_card_id = 0
+
+    def create_cards_dictionary(self):
+        """Function that creates a dictionary of the cards which are identified by
+        its position and the number that appears on each card is also displayed
+
+        Returns:
+            dictionary: already mentioned dictionary of cards
+        """
+        self.card_dict = {}; i = 0
+        card_number = array(range(1,int(self.number_of_cards/2)+1))
+        card_number = append(card_number,card_number)
+        shuffle(card_number)
+        for x in range(self.cards_distribution[0]):
+            for y in range(self.cards_distribution[1]):
+                pipe_id = str(self.cards_size[0]*x)+'_'+ \
+                    str(self.cards_size[1]*y)
+                self.card_dict[pipe_id] = [
+                    Card([self.cards_size[0]*x,self.cards_size[1]*y], \
+                        card_number[i],self.cards_size),
+                    card_number[i]
+                ]
+                i += 1
+        return self.card_dict
+
+    def identify_card(self,screen):
+        mx, my = pygame.mouse.get_pos()
+        x_card = int(mx/self.cards_size[0])*self.cards_size[0]
+        y_card = int(my/self.cards_size[1])*self.cards_size[1]
+        pipe_id = str(x_card)+'_'+str(y_card)
+        if pipe_id in self.card_dict.keys():
+            self.card_dict[pipe_id][0].turn(screen.screen)
+            if self.last_card_id != pipe_id and self.last_card_id != 0 and \
+                self.card_dict[pipe_id][1] == self.card_dict[self.last_card_id][1]:
+                    self.card_dict.pop(pipe_id)
+                    self.card_dict.pop(self.last_card_id)
+                    self.last_card_id = 0
+                    screen.initial_setup(self.card_dict)
+            else:
+                self.last_card_id = pipe_id
 
 
 def main_memory():
@@ -130,16 +161,12 @@ def main_memory():
     are laid face down on a surface and one card is flipped face up over each
     turn. The object of the game is to turn over pairs of matching cards.
     """
-    global cards_number, cards_distribution, cards_size
     # Dimensions
     screen_size = [640,426]
-    # cards_distribution = [6,3]
-    cards_distribution = [2,1]
-    cards_number = prod(cards_distribution)
-    cards_size = [int(x/y) for x, y in zip(screen_size,cards_distribution)]
 
     pygame.init()
-    card_dict = create_cards_dictionary()
+    deck_cards = Deck(screen_size)
+    card_dict = deck_cards.create_cards_dictionary()
     screen = MainScreen(screen_size)
 
     while True:
@@ -148,28 +175,15 @@ def main_memory():
             break
         if e.type == pygame.QUIT:
             quit()
-        screen.initial_setup(card_dict)
+        screen.initial_setup(deck_cards.card_dict)
 
-    last_card_id = 0; game = True
+    game = True
     while game:
         e = pygame.event.wait()
         if e.type == pygame.QUIT:
             quit()
         if e.type == pygame.MOUSEBUTTONDOWN:
-            mx, my = pygame.mouse.get_pos()
-            x_card = int(mx/cards_size[0])*cards_size[0]
-            y_card = int(my/cards_size[1])*cards_size[1]
-            pipe_id = str(x_card)+'_'+str(y_card)
-            if pipe_id in card_dict.keys():
-                card_dict[pipe_id][0].turn(screen.screen)
-                if last_card_id != pipe_id and last_card_id != 0 and \
-                    card_dict[pipe_id][1] == card_dict[last_card_id][1]:
-                        card_dict.pop(pipe_id)
-                        card_dict.pop(last_card_id)
-                        last_card_id = 0
-                        screen.initial_setup(card_dict)
-                else:
-                    last_card_id = pipe_id
+            deck_cards.identify_card(screen)
             screen.initial_setup(card_dict)
 
         if len(card_dict) == 0:
@@ -192,4 +206,4 @@ def main_memory():
             pygame.quit()
 
 
-main_memory()
+# main_memory()

@@ -104,8 +104,8 @@ def sumas(master2):
             message_box()
 
     # Image with the numerical series
-    img1 = ImageTk.PhotoImage(image = Image.open("figures/3_sumas.png"))
-    image = tk.Label(master2, image = img1)
+    img_sumas = ImageTk.PhotoImage(image = Image.open("figures/3_sumas.png"))
+    image = tk.Label(master2, image = img_sumas)
     image.grid(row=0, column=0, columnspan=5, rowspan=1)
 
     # Font size and width of the entries
@@ -138,18 +138,18 @@ def main_futbol():
     """Main function which connects all the rest and displays the main directions for the minigame
     """
     # Explain the mission
-    root1 = tk.Tk()
-    Explanation(root1, "figures/3_futbol.png")
-    root1.destroy()
+    # root1 = tk.Tk()
+    # Explanation(root1, "figures/3_futbol.png")
+    # root1.destroy()
 
     #Create the tkinter window
     master = tk.Tk()
     sumas(master)
     
     # End the mission
-    root2 = tk.Tk()
-    Explanation(root2, "figures/3_conseguido.png")
-    root2.destroy()
+    # root2 = tk.Tk()
+    # Explanation(root2, "figures/3_conseguido.png")
+    # root2.destroy()
 
 # Initialize the game
 # main_futbol()

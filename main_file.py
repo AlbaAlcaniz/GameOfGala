@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import ImageTk, Image
 
 #Import the minigames
+from memory import main_memory
 from labyrinth import main_labyrinth
 from series import main_series
 from futbol import main_futbol
@@ -91,7 +92,10 @@ class ExplainMission(tk.Frame):
 
     image_paths = [
         'figures/0_alcanicil.png',
-        'figures/0_letsgo.png'
+        'figures/0_letsgo.png',
+        'figures/6_explanation.png',
+        'memory_game',
+        'figures/6_congrats.png'
     ]
 
     def __init__(self, master=None):
@@ -104,7 +108,7 @@ class ExplainMission(tk.Frame):
         """
         tk.Frame.__init__(self, master)
         self.master.geometry("+300+100")
-        self.master.attributes('-topmost', True)
+        # self.master.attributes('-topmost', True)
         self.explanation_image()
         self.pack(side = 'right')
         self.next_button()
@@ -131,13 +135,19 @@ class ExplainMission(tk.Frame):
         """Command for when the next_button is pressed where the following
         image of the series is updated and displayed
         """
-        if self.counter == 2:
-            self.master.destroy()
+        if self.counter == 1:
+            self.img_next = tk.PhotoImage(file='figures/0_letsgobutton.png')
         else:
-            if self.counter == 1:
-                self.img_next = tk.PhotoImage(file='figures/0_letsgobutton.png')
-                self.b_next.configure(image=self.img_next)
-                self.b_next.image = self.img_next
+            self.img_next = tk.PhotoImage(file='figures/0_next.png')
+        if self.counter == 3:
+            done = main_memory() #fernan
+            if done:
+                self.counter +=1
+        # if self.counter == 4:
+        #     self.master.destroy()
+        else:
+            self.b_next.configure(image=self.img_next)
+            self.b_next.image = self.img_next
             self.img_panel = tk.PhotoImage(file=self.image_paths[self.counter])
             self.panel.configure(image=self.img_panel)
             self.panel.image = self.img_panel
@@ -162,7 +172,7 @@ def main():
     app.mainloop()
 
     # Minigames
-    # main_memory() #fernan
+    main_memory() #fernan
     main_futbol() #ducho
     main_series() #es un
     main_labyrinth() #miedica

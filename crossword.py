@@ -155,4 +155,4 @@ def main_crossword():
     root2.destroy()
 
 # Initialize the game
-# main_crossword()
+main_crossword()
