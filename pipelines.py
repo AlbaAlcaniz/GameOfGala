@@ -194,7 +194,7 @@ def main_pipelines():
     ws = Screen()
     ws.screensize(screen_width,screen_width)
     ws.bgcolor('cornflowerblue')
-    ws.bgpic('figures/5_pipelines_background.PNG')
+    ws.bgpic('figures/6_2_pipelines_background.PNG')
     
     p = Pipes()
     ws.onclick(p.redraw_clicked_pipe)

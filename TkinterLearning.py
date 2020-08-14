@@ -1,7 +1,9 @@
 import tkinter as tk
 
 from memory import main_memory
-from futbol import main_futbol
+from futbol_series import main_futbol, main_series
+from labyrinth import main_labyrinth
+# from pipelines import main_pipelines
 
 class BasicFrame(tk.Frame):
     def display_image(self, img_path):
@@ -19,8 +21,8 @@ class InitialFrame(BasicFrame):
         tk.Frame.__init__(self, master)
         self.display_image(img_path)
         self.pack()
-        self.img_yes = tk.PhotoImage(file='figures/0_si.png')
-        self.img_no = tk.PhotoImage(file='figures/0_no.png')
+        self.img_yes = tk.PhotoImage(file='figures/0_1_si.png')
+        self.img_no = tk.PhotoImage(file='figures/0_1_no.png')
         self.yes_no_button('left')
         self.yes_no_button('right')
 
@@ -48,11 +50,11 @@ class InitialFrame(BasicFrame):
         self.b_no.destroy()
         self.b_yes.destroy()
 
-        self.img_panel = tk.PhotoImage(file='figures/0_sosa.png')
+        self.img_panel = tk.PhotoImage(file='figures/0_1_sosa.png')
         self.panel.configure(image=self.img_panel)
 
 
-class BasicFrame(BasicFrame):
+class FigureFrame(BasicFrame):
     """Class inherited from the Frame class of the tkinter module.
     This class explains the mission by showing several images
     """
@@ -70,7 +72,7 @@ class BasicFrame(BasicFrame):
         """
         f = tk.Frame(self, height=50, width=50)
         f.pack(side='left')
-        self.img_next = tk.PhotoImage(file='figures/0_next.png')
+        self.img_next = tk.PhotoImage(file='figures/0_0_next.png')
         self.b_next = tk.Button(f,image=self.img_next,command=self.destroy_frame)
         self.b_next.pack(expand=1)
 
@@ -85,27 +87,46 @@ root = tk.Tk()
 root.geometry("+300+100")
 root.protocol("WM_DELETE_WINDOW",on_closing)
 
-app = InitialFrame(root,'figures/0_ayuda.png')
+app = InitialFrame(root,'figures/0_1_help.png')
 app.mainloop()
 
 image_paths = [
-    'figures/0_miguelina.png',
-    'figures/0_alcanicil.png',
-    'figures/0_letsgo.png',
-    'figures/6_explanation.png',
-    'memory_game',
-    'figures/6_congrats.png',
-    'figures/3_futbol.png',
-    'futbol_game',
-    'figures/3_conseguido.png'
+    # 'figures/0_2_miguelina.png',
+    # 'figures/0_3_alcanicil.png',
+    # 'figures/0_4_letsgo.png',
+    # 'figures/1_1_explanation.png',
+    # 'memory_game',
+    # 'figures/1_3_congrats.png',
+    # 'figures/2_1_explanation.png',
+    # 'futbol_game',
+    # 'figures/2_3_congrats.png',
+    # 'figures/3_1_explanation.png',
+    # 'series_game',
+    # 'figures/3_3_congrats.png',
+    'figures/4_1_explanation.png',
+    'labyrinth_game',
+    'figures/4_3_congrats.png',
+    'figures/5_1_gotit.png',
+    'figures/5_2_wakeupprincess.png',
+    'figures/5_3_failed.png',
+    'figures/5_4_blaiplaying.png',
+    # 'figures/6_1_explanation.png',
+    # 'pipelines_game',
+    # 'figures/6_3_congrats.png',
 ]
 for img_path in image_paths:
     if img_path == 'memory_game':
         main_memory()
     elif img_path == 'futbol_game':
-        main_futbol()
+        main_futbol(root)
+    elif img_path == 'series_game':
+        main_series(root)
+    elif img_path == 'labyrinth_game':
+        main_labyrinth(root)
+    # elif img_path == 'labyrinth_game':
+    #     main_pipelines()
     else:
-        app = BasicFrame(root, img_path)
+        app = FigureFrame(root, img_path)
         app.mainloop()
 
 

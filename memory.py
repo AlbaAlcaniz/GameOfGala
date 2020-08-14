@@ -66,8 +66,8 @@ class Card():
 class MainScreen():
     def __init__(self,screen_size):
         self.screen = pygame.display.set_mode(screen_size,pygame.RESIZABLE,0,32)
-        self.bg_img = pygame.image.load('figures/6_WinningPicture.jpg')
-        self.bg_img2 = pygame.image.load('figures/6_WinningPicture2.jpg')
+        self.bg_img = pygame.image.load('figures/1_2_winningpicture.jpg')
+        self.bg_img2 = pygame.image.load('figures/1_2_winningpicture2.jpg')
 
     def initial_setup(self,card_dict):
         pygame.display.update()
