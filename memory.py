@@ -137,7 +137,7 @@ class Deck():
                     card_number[i]
                 ]
                 i += 1
-        return self.card_dict
+        # return self.card_dict
 
     def identify_card(self,screen):
         mx, my = pygame.mouse.get_pos()
@@ -166,7 +166,7 @@ def main_memory():
 
     pygame.init()
     deck_cards = Deck(screen_size)
-    card_dict = deck_cards.create_cards_dictionary()
+    # card_dict = deck_cards.create_cards_dictionary()
     screen = MainScreen(screen_size)
 
     while True:

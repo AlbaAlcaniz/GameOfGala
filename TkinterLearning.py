@@ -3,7 +3,7 @@ import tkinter as tk
 from memory import main_memory
 from futbol_series import main_futbol, main_series
 from labyrinth import main_labyrinth
-# from pipelines import main_pipelines
+from pipelines import main_pipelines
 
 class BasicFrame(tk.Frame):
     def display_image(self, img_path):
@@ -103,16 +103,16 @@ image_paths = [
     # 'figures/3_1_explanation.png',
     # 'series_game',
     # 'figures/3_3_congrats.png',
-    'figures/4_1_explanation.png',
-    'labyrinth_game',
-    'figures/4_3_congrats.png',
-    'figures/5_1_gotit.png',
-    'figures/5_2_wakeupprincess.png',
-    'figures/5_3_failed.png',
-    'figures/5_4_blaiplaying.png',
-    # 'figures/6_1_explanation.png',
-    # 'pipelines_game',
-    # 'figures/6_3_congrats.png',
+    # 'figures/4_1_explanation.png',
+    # 'labyrinth_game',
+    # 'figures/4_3_congrats.png',
+    # 'figures/5_1_gotit.png',
+    # 'figures/5_2_wakeupprincess.png',
+    # 'figures/5_3_failed.png',
+    # 'figures/5_4_blaiplaying.png',
+    'figures/6_1_explanation.png',
+    'pipelines_game',
+    'figures/6_3_congrats.png',
 ]
 for img_path in image_paths:
     if img_path == 'memory_game':
@@ -123,8 +123,8 @@ for img_path in image_paths:
         main_series(root)
     elif img_path == 'labyrinth_game':
         main_labyrinth(root)
-    # elif img_path == 'labyrinth_game':
-    #     main_pipelines()
+    elif img_path == 'pipelines_game':
+        main_pipelines()
     else:
         app = FigureFrame(root, img_path)
         app.mainloop()
