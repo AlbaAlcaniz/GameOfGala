@@ -39,7 +39,7 @@ class MainTopLevel():
         root = tk.Toplevel(self.top)
         root.attributes('-topmost', True)
         root.withdraw()
-        messagebox.showinfo('Oh oh', 'Mensaje incorrecto. Intentalo otra vez!')
+        messagebox.showinfo('Oh oh', 'Mensaje incorrecto. Inténtalo otra vez!')
         try:
             root.destroy()
         except:
@@ -90,7 +90,7 @@ class MainTopLevel():
             text_font (int): font size of the text
         """
         self.textBox = tk.Text(self.top, height=1, width=17,
-            font=("Helvetica", text_font))
+            font=('Helvetica', text_font))
         self.textBox.grid(row=box_pos[0], column=box_pos[1],
             columnspan=box_pos[2], rowspan=box_pos[3])
 

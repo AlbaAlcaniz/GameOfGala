@@ -1,85 +1,113 @@
-# Import packages
 import tkinter as tk
 from tkinter import messagebox
-from PIL import ImageTk, Image
-import pygame
 
-class Explanation:
-    """Explanation of the minigame.
+class MainWindow():
+    """Main class for constructing the tkinter widgets on a tkinter window 
+    on top of the main window with the explanation of the game.
     """
-
-    def __init__(self, master, figure_root):
-        """Initialize the explanation.
+    def __init__(self, master):
+        """Create the top level window.
 
         Args:
-            master (tkinter.Tk): initial window in which the minigame is explained
-            figure_root (string): folder where the image is saved
+            master (tkinter.Tk): window of the general game
         """
+        self.top = tk.Toplevel(master)
+        self.top.attributes('-topmost', True)
+        self.top.attributes('-topmost', False)
 
-        # Make sure that the window appears on top
-        master.attributes('-topmost', True)
+    def create_descriptions(self, descriptions, des_font):
+        """Create labels with the descriptions of the crossword keys.
 
-        # Export and display the explanation image
-        img1 = ImageTk.PhotoImage(image = Image.open(figure_root))
-        panel = tk.Label(master, image = img1)
-        panel.img1 = img1        
-        panel.pack()
-
-        # "Next" button
-        img2 = ImageTk.PhotoImage(Image.open("figures/0_next.png"))
-        # Define the space for the button
-        f = tk.Frame(master, height=50, width=50)
-        f.pack_propagate(0)
-        f.pack(side = "right")
-        # Create button
-        self.button = tk.Button(f, image = img2, command=f.quit)
-        self.button.img2 = img2
-        self.button.pack(expand=1)
-        
-        # Initialize the window
-        master.mainloop()
-
-def explanation(master):
-    """Explanation of the minigame
-    """
-    #Make sure that the window appears on top
-    master.attributes('-topmost', True)
-
-    # Image with the explanation
-    img1 = ImageTk.PhotoImage(image = Image.open("figures/3_futbol.png"))
-    image = tk.Label(master, image = img1)
-    image.pack()
-
-    # "Next" button
-    img2 = ImageTk.PhotoImage(Image.open("figures/0_next.png"))
-    # Define the space for the button
-    f = tk.Frame(master, height=50, width=50)
-    f.pack_propagate(0)
-    f.pack(side = "right")
-    # Create button
-    b = tk.Button(f, image = img2, command=f.quit)
-    b.pack(expand=1)
-
-    # Initialize the window
-    master.mainloop()
-
-    # return master
-    pass
-
-def sumas(master2):
-    """Function where the minigame is shown and generated
-    """
-
-    #Create the tkinter window
-    # master2 = tk.Tk()
-    #Make sure that the window appears on top
-    master2.attributes('-topmost', True)
-
-    def message_box():
-        """Function that generates a warning message in case the message is not correct
+        Args:
+            descriptions (list): list of strings with the words' definitions
+            des_font (int): font size for the description text
         """
-        #Make sure that the window appears on top
-        root = tk.Tk()
+        i = 0
+        for des in descriptions:
+            tk.Label(self.top, text=des, font=('Helvetica', \
+                des_font)).grid(row=i, column=0)
+            i += 1
+
+    def create_entries(self, let_pos, wid, let_font):
+        """Create the entries where the player can write the words and
+        implement that after the player has pressed a key, the cursor moves to
+        the next entry.
+
+        Args:
+            let_pos (list): list of positions for the entries
+            wid (int): width of the entries
+            let_font (int): font size for the text written on the entries
+        """
+        self.let_dic = {}
+        for pos in let_pos:
+            if pos[1] == 5:
+                bg_color = '#ccccff'
+            else:
+                bg_color = '#ffffff'
+            self.let_dic[str(pos)] = tk.Entry(self.top, font=('Helvetica', \
+                let_font), background = bg_color, width = wid)
+            self.let_dic[str(pos)].grid(row=pos[0], column=pos[1])
+
+        entries = [child for child in self.top.winfo_children() if \
+            isinstance(child, tk.Entry)]
+        for idx, entry in enumerate(entries):
+            entry.bind('<Key>', lambda e, idx=idx: self.go_to_entry(e, \
+                entries, idx))
+
+    def go_to_entry(self, event, entry_list, this_index):
+        """Go to the next or previous entry depending on the key pressed by the
+        player. The event.keycode = 8 corresponds to the backspace key
+
+        Args:
+            event (tkinter.Event): event: the player has pressed a key
+            entry_list (list): list of entries
+            this_index (int): index of the position of the entry where the
+                player is at
+        """
+        if event.keycode == 8:
+            self.go_to_previous_entry(entry_list, this_index)
+        elif event.char == event.keysym:
+            self.go_to_next_entry(entry_list, this_index)
+        else:
+            pass
+
+    def go_to_next_entry(self, entry_list, this_index):
+        """Go to the next entry when the player presses a letter key
+
+        Args:
+            entry_list (list): list of entries
+            this_index (int): index of the position of the entry where the
+                player is at
+        """
+        next_index = (this_index + 1) % len(entry_list)
+        entry_list[next_index].focus_set()
+
+    def go_to_previous_entry(self, entry_list, this_index):
+        """Go to the previous entry when the player presses a non-letter key,
+        such as the backspace
+
+        Args:
+            entry_list (list): list of entries
+            this_index (int): index of the position of the entry where the
+                player is at
+        """
+        previous_index = (this_index - 1) % len(entry_list)
+        entry_list[previous_index].focus_set()
+        entry_list[previous_index].delete(0, tk.END)
+
+    def create_next_button(self, img_next):
+        """Create a button to check whether the player has correctly filled the
+        crossword.
+
+        Args:
+            img_next (tkinter.PhotoImage): image displayed in the button
+        """
+        tk.Button(self.top, height=50, width=50, image=img_next, 
+                command=lambda: self.retrieve_input()).grid(row=6, column=10)
+
+    def message_box(self):
+        """Generate a warning message in case the message is not correct"""
+        root = tk.Toplevel(self.top)
         root.attributes('-topmost', True)
         root.withdraw()
         messagebox.showinfo('Oh oh', 'Mensaje incorrecto. Intentalo otra vez!')
@@ -88,71 +116,53 @@ def sumas(master2):
         except:
             pass
 
-    def retrieve_input():
-        """Function that gets the string written in the text box if that string is correct
+    def retrieve_input(self):
+        """Read the letters written in the entries on position 5, and compare
+        to the correct message. If the written message is correct, the game 
+        window is destroyed. Otherwise, a warning message stating that the 
+        message is incorrect is shown.
         """
-        # Get the message written in the textBox
-        # The "1.0" implies that the message is read from the first line, character zero
-        # end-1c implies reading until the end of the entry, except for an automatically created last character
-        inputValue=textBox.get("1.0","end-1c")
-        
-        if inputValue.upper() == 'NOCHES':
-            #If the message coincides with the right answer, destroy the root and onto the next minigame!
-            master2.destroy()
+        message = 'NOCHES'
+        written_message = ''
+        for i in range(0,6):
+            let_id = '['+str(i)+', 5]'
+            written_message += self.let_dic[let_id].get().upper()
+
+        if message == written_message:
+            self.top.destroy()
+            self.top.quit()
         else:
-            # If the message doesn't coincide, warn the player
             message_box()
 
-    # Image with the numerical series
-    img1 = ImageTk.PhotoImage(image = Image.open("figures/4_crucigrama.png"))
-    image = tk.Label(master2, image = img1)
-    image.grid(row=0, column=0, columnspan=1, rowspan=7)
+def main_crossword(master):
+    """Function for the crossword, based on key concepts from balloons. By
+    correctly filling the words, the message for the main game is extracted.
 
-    # Font size and width of the entries
-    font_ = 28; wid = 2
-    letter_row = [0,0,0,0,0,1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5,5,5,5]
-    letter_column = [7,8,9,10,11,3,4,5,6,7,7,8,9,10,11,4,5,6,7,8,5,6,7,8,9,1,2,3,4,5,6,7]
-    for i in range(len(letter_row)-1):
-        if letter_column[i] == 7:
-            tk.Entry(master2, font=("Helvetica", font_), background = "#ccccff", \
-            width = wid).grid(row=letter_row[i], column=letter_column[i])
-        else:
-            tk.Entry(master2, font=("Helvetica", font_), background = "#ffffff", \
-            width = wid).grid(row=letter_row[i], column=letter_column[i])
-
-    # Image with the explanation of the relation between letters and numbers
-    img2 = ImageTk.PhotoImage(image = Image.open("figures/4_question.png"))
-    image = tk.Label(master2, image = img2)
-    image.grid(row=6, column=1, columnspan=6, rowspan=1)
-
-    # Create the text space where the message can be written
-    textBox = tk.Text(master2, height=1, width=8, font=("Helvetica", font_))
-    textBox.grid(row = 6, column = 7, columnspan=4, rowspan=1)
-
-    # Create the button for when the message is ready
-    img3 = ImageTk.PhotoImage(Image.open("figures/0_next.png"))
-    tk.Button(master2, height=43, width=43, image = img3, command=lambda: retrieve_input()).grid(row = 6, column = 11)
-
-    master2.mainloop()
-    
-    pass
-
-def main_crossword():
-    """Main function which connects all the rest and displays the main directions for the minigame
+    Args:
+        master (tkinter.Tk): window of the general game.
     """
-    # Explain the mission
-    root1 = tk.Tk()
-    Explanation(root1, "figures/4_globos.png")
-    root1.destroy()
-
-    #Create the tkinter window
-    master = tk.Tk()
-    sumas(master)
+    w = MainWindow(master)
     
-    # End the mission
-    root2 = tk.Tk()
-    Explanation(root2, "figures/4_avolar.png")
-    root2.destroy()
+    descriptions = [
+        'Decide la dirección del globo',
+        'Ni avión, ni helicóptero, ni zepelín',
+        'Donde guardas la fruta y se sube la gente',
+        'Vehículo que te rescata por tierra',
+        'Calienta el aire para poder volar',
+        'Parecen hechas de algodón'
+    ]
 
-# Initialize the game
-main_crossword()
+    let_pos = [
+        [0, 2],[0, 3],[0, 4],[0, 5],[0, 6],[0, 7],[1, 1],[1, 2],[1, 3],[1, 4],
+        [1, 5],[2, 5],[2, 6],[2, 7],[2, 8],[2, 9],[3, 2],[3, 3],[3, 4],[3, 5],
+        [3, 6],[4, 3],[4, 4],[4, 5],[4, 6],[4, 7],[5, 1],[5, 2],[5, 3],[5, 4],
+        [5, 5]
+    ]
+
+    img_next = tk.PhotoImage(file='figures/0_0_next.png')
+
+    w.create_descriptions(descriptions,16)
+    w.create_entries(let_pos, 2, 18)
+    w.create_next_button(img_next)    
+
+    w.top.mainloop()

@@ -1,5 +1,5 @@
 import pygame
-import time
+from time import time
 from math import prod
 from random import shuffle
 from numpy import array, append
@@ -8,7 +8,6 @@ from numpy import array, append
 class Card():
     """Class for the card objects
     """
-    global cards_size
 
     def __init__(self,pos,number,cards_size):
         """Initialize the card by giving its position inside the screen and the
@@ -100,7 +99,7 @@ class MainScreen():
     def new_setup(self):
         self.screen.blit(self.bg_img2, (0,0))
         self.screen.blit(self.img_text, self.rect)
-        if time.time() % 1 > 0.5:
+        if time() % 1 > 0.5:
             pygame.draw.rect(self.screen, self.text_color, self.cursor)
         pygame.display.update()
 
@@ -137,7 +136,6 @@ class Deck():
                     card_number[i]
                 ]
                 i += 1
-        # return self.card_dict
 
     def identify_card(self,screen):
         mx, my = pygame.mouse.get_pos()
@@ -161,12 +159,10 @@ def main_memory():
     are laid face down on a surface and one card is flipped face up over each
     turn. The object of the game is to turn over pairs of matching cards.
     """
-    # Dimensions
     screen_size = [640,426]
 
     pygame.init()
     deck_cards = Deck(screen_size)
-    # card_dict = deck_cards.create_cards_dictionary()
     screen = MainScreen(screen_size)
 
     while True:
@@ -184,9 +180,9 @@ def main_memory():
             quit()
         if e.type == pygame.MOUSEBUTTONDOWN:
             deck_cards.identify_card(screen)
-            screen.initial_setup(card_dict)
+            screen.initial_setup(deck_cards.card_dict)
 
-        if len(card_dict) == 0:
+        if len(deck_cards.card_dict) == 0:
             game = False
             
     screen.new_configuration()

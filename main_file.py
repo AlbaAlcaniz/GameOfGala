@@ -1,47 +1,31 @@
 import tkinter as tk
-from PIL import ImageTk, Image
 
-#Import the minigames
 from memory import main_memory
+from futbol_series import main_futbol, main_series
 from labyrinth import main_labyrinth
-from series import main_series
-from futbol import main_futbol
+from pipelines import main_pipelines
 from crossword import main_crossword
-# from pipelines import main_pipelines
+
+class BasicFrame(tk.Frame):
+    def display_image(self, img_path):
+        self.img_panel = tk.PhotoImage(file=img_path)
+        self.panel = tk.Label(self,image=self.img_panel)
+        self.panel.pack()
+
+    def destroy_frame(self):
+        self.destroy()
+        self.quit()
 
 
-class StartGame(tk.Frame):
-    """Inherited class from the Frame class from tkinter.
-    This class starts the game by asking the player for help on a mission.
-    If the player wants to help, the mission is explained.
-    Otherwise, the game will call the player boring and it will be closed.
-    """
-
-    def __init__(self, master):
-        """Initialize the class by setting the attributes of the tkinter window
-        together with the buttons and the image
-
-        Args:
-            master (tkinter.Tk): window where the buttons and image are 
-                displayed
-        """
+class InitialFrame(BasicFrame):
+    def __init__(self, master, img_path):
         tk.Frame.__init__(self, master)
-        self.master.geometry("+300+100")
-        self.master.attributes('-topmost', True)
-        self.help_image()
+        self.display_image(img_path)
         self.pack()
-        self.img_yes = tk.PhotoImage(file='figures/0_si.png')
-        self.img_no = tk.PhotoImage(file='figures/0_no.png')
+        self.img_yes = tk.PhotoImage(file='figures/0_1_si.png')
+        self.img_no = tk.PhotoImage(file='figures/0_1_no.png')
         self.yes_no_button('left')
         self.yes_no_button('right')
-        self.master.protocol("WM_DELETE_WINDOW", self.on_closing)
-
-    def help_image(self):
-        """Create and display the panel where the help image is shown
-        """
-        self.img_panel = tk.PhotoImage(file='figures/0_ayuda.png')
-        self.panel = tk.Label(image=self.img_panel)
-        self.panel.pack()
 
     def yes_no_button(self, button_side):
         """Creates a button which displays the YES or NO options depending on
@@ -54,17 +38,11 @@ class StartGame(tk.Frame):
         f.pack(side = button_side)
         if button_side == 'left':
             self.b_yes = tk.Button(f, image=self.img_yes, 
-                                    command=self.callback)
+                                    command=self.destroy_frame)
             self.b_yes.pack(expand=1)
         else:
             self.b_no = tk.Button(f, image=self.img_no, command=self.sosa)
             self.b_no.pack(expand=1)
-
-    def callback(self):
-        """Function in case the player wants to help which destroys the root 
-        widget so that the next figures are displayed
-        """
-        self.master.destroy()
 
     def sosa(self):
         """Function in case the player doesn't want to help in which the player
@@ -73,111 +51,91 @@ class StartGame(tk.Frame):
         self.b_no.destroy()
         self.b_yes.destroy()
 
-        self.img_panel = tk.PhotoImage(file='figures/0_sosa.png')
+        self.img_panel = tk.PhotoImage(file='figures/0_1_sosa.png')
         self.panel.configure(image=self.img_panel)
 
-        self.destroy()
 
-    def on_closing(self):
-        """Exit python when the player clicks the cross button on the top right
-        window
-        """
-        exit()
-
-
-class ExplainMission(tk.Frame):
+class FigureFrame(BasicFrame):
     """Class inherited from the Frame class of the tkinter module.
     This class explains the mission by showing several images
     """
 
-    image_paths = [
-        'figures/0_alcanicil.png',
-        'figures/0_letsgo.png',
-        'figures/6_explanation.png',
-        'memory_game',
-        'figures/6_congrats.png'
-    ]
-
-    def __init__(self, master=None):
-        """Initialize the class by setting the attributes of the tkinter window
-        together with the button and the images
-
-        Args:
-            master (tkinter.Tk): window where the images and button are 
-                displayed
-        """
+    def __init__(self, master,img_path):
         tk.Frame.__init__(self, master)
-        self.master.geometry("+300+100")
-        # self.master.attributes('-topmost', True)
-        self.explanation_image()
-        self.pack(side = 'right')
+        self.display_image(img_path)
+        # self.pack(side = 'right')
         self.next_button()
+        self.pack()
         self.counter = 0
-        self.master.protocol("WM_DELETE_WINDOW", self.on_closing)
-
-    def explanation_image(self):
-        """Create and display the panel where the image is shown
-        """
-        self.img_panel = tk.PhotoImage(file='figures/0_miguelina.png')
-        self.panel = tk.Label(image=self.img_panel)
-        self.panel.pack()
 
     def next_button(self):
         """Button that shows the next explanation image when pressed
         """
         f = tk.Frame(self, height=50, width=50)
         f.pack(side='left')
-        self.img_next = tk.PhotoImage(file='figures/0_next.png')
-        self.b_next = tk.Button(f,image=self.img_next,command=self.next_image)
+        self.img_next = tk.PhotoImage(file='figures/0_0_next.png')
+        self.b_next = tk.Button(f,image=self.img_next,command=self.destroy_frame)
         self.b_next.pack(expand=1)
 
-    def next_image(self):
-        """Command for when the next_button is pressed where the following
-        image of the series is updated and displayed
-        """
-        if self.counter == 1:
-            self.img_next = tk.PhotoImage(file='figures/0_letsgobutton.png')
-        else:
-            self.img_next = tk.PhotoImage(file='figures/0_next.png')
-        if self.counter == 3:
-            done = main_memory() #fernan
-            if done:
-                self.counter +=1
-        # if self.counter == 4:
-        #     self.master.destroy()
-        else:
-            self.b_next.configure(image=self.img_next)
-            self.b_next.image = self.img_next
-            self.img_panel = tk.PhotoImage(file=self.image_paths[self.counter])
-            self.panel.configure(image=self.img_panel)
-            self.panel.image = self.img_panel
-            self.counter += 1
 
-    def on_closing(self):
-        """Exit python when the player clicks the cross button on the top right
-        window
-        """
-        exit()
-
-
-def main():
-    """Main function where the mission is explained and links all the minigames
+def on_closing():
+    """Exit python when the player clicks the cross button on the top right
+    window
     """
-    root = tk.Tk()
-    app = StartGame(master=root)
-    app.mainloop()
+    exit()
 
-    root = tk.Tk()
-    app = ExplainMission(master=root)
-    app.mainloop()
+root = tk.Tk()
+root.geometry("+300+100")
+root.protocol("WM_DELETE_WINDOW",on_closing)
 
-    # Minigames
-    main_memory() #fernan
-    main_futbol() #ducho
-    main_series() #es un
-    main_labyrinth() #miedica
+app = InitialFrame(root,'figures/0_1_help.png')
+app.mainloop()
 
-    # main_pipelines() #medias
-    main_crossword() #noches
+image_paths = [
+    # 'figures/0_2_miguelina.png',
+    # 'figures/0_3_alcanicil.png',
+    # 'figures/0_4_letsgo.png',
+    # 'figures/1_1_explanation.png',
+    # 'memory_game',
+    # 'figures/1_3_congrats.png',
+    # 'figures/2_1_explanation.png',
+    # 'futbol_game',
+    # 'figures/2_3_congrats.png',
+    # 'figures/3_1_explanation.png',
+    # 'series_game',
+    # 'figures/3_3_congrats.png',
+    # 'figures/4_1_explanation.png',
+    # 'labyrinth_game',
+    # 'figures/4_3_congrats.png',
+    # 'figures/5_1_gotit.png',
+    # 'figures/5_2_wakeupprincess.png',
+    # 'figures/5_3_failed.png',
+    # 'figures/5_4_blaiplaying.png',
+    # 'figures/6_1_explanation.png',
+    # 'pipelines_game',
+    # 'figures/6_3_congrats.png',
+    'figures/7_1_explanation.png',
+    'crossword_game',
+    'figures/7_3_congrats.png',
+    'figures/8_1_gotit.png',
+    'figures/8_2_wakeupprincess.png',
+    'figures/8_3_success.png'
+]
+for img_path in image_paths:
+    if img_path == 'memory_game':
+        main_memory()
+    elif img_path == 'futbol_game':
+        main_futbol(root)
+    elif img_path == 'series_game':
+        main_series(root)
+    elif img_path == 'labyrinth_game':
+        main_labyrinth(root)
+    elif img_path == 'pipelines_game':
+        main_pipelines()
+    elif img_path == 'crossword_game':
+        main_crossword(root)
+    else:
+        app = FigureFrame(root, img_path)
+        app.mainloop()
 
-main()
+

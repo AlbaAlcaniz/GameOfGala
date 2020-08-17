@@ -1,32 +1,49 @@
-from tkinter import *
 
-class Application(Frame):
-    def say_hi(self):
-        print("hi there, everyone!")
+##################
+# a = []
+# for i in range(2,8):
+#     a.append([0,i])
+# for i in range(1,6):
+#     a.append([1,i])
+# for i in range(5,10):
+#     a.append([2,i])
+# for i in range(2,7):
+#     a.append([3,i])
+# for i in range(3,8):
+#     a.append([4,i])
+# for i in range(1,5):
+#     a.append([5,i])
+# print(a)
+##################
+# from tkinter import *
 
-    def createWidgets(self):
-        self.QUIT = Button(self)
-        self.QUIT["text"] = "QUIT"
-        self.QUIT["fg"]   = "red"
-        self.QUIT["command"] =  self.quit
+# class Application(Frame):
+#     def say_hi(self):
+#         print("hi there, everyone!")
 
-        self.QUIT.pack({"side": "left"})
+#     def createWidgets(self):
+#         self.QUIT = Button(self)
+#         self.QUIT["text"] = "QUIT"
+#         self.QUIT["fg"]   = "red"
+#         self.QUIT["command"] =  self.quit
 
-        self.hi_there = Button(self)
-        self.hi_there["text"] = "Hello",
-        self.hi_there["command"] = self.say_hi
+#         self.QUIT.pack({"side": "left"})
 
-        self.hi_there.pack({"side": "left"})
+#         self.hi_there = Button(self)
+#         self.hi_there["text"] = "Hello",
+#         self.hi_there["command"] = self.say_hi
 
-    def __init__(self, master=None):
-        Frame.__init__(self, master)
-        self.pack()
-        self.createWidgets()
+#         self.hi_there.pack({"side": "left"})
 
-root = Tk()
-app = Application(master=root)
-app.mainloop()
-root.destroy()
+#     def __init__(self, master=None):
+#         Frame.__init__(self, master)
+#         self.pack()
+#         self.createWidgets()
+
+# root = Tk()
+# app = Application(master=root)
+# app.mainloop()
+# root.destroy()
 
 ##################
 # from math import pi

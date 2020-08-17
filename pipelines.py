@@ -1,204 +1,248 @@
-from math import floor, pi
-from turtle import Turtle, Screen
-from pipelines_aux import draw_pipe_aux
+import pygame
+from time import time
+from numpy import array
 
 
-class MovablePipe(Turtle):
-    """Class which determines all the common characteristics of the pipes that can be moved (such as color,
-    speed, etc). It is a child class of the Turtle class from the turtle module
+class Pipe():
+    """Class for the green pipe objects which can be turned around.
     """
-
-    def __init__(self,position,orientation,correct_orientation):
-        """Initialize the movable pipes by setting different characteristics of the turtle
+    def __init__(self, abs_pos, angle, correct_angle, bended):
+        """Initialize each pipe by knowing its position, angle, correct angle
+        and whether they are bended or straight.
 
         Args:
-            position (list): [x,y] list determining the position of the center of the pipe
-            orientation (string): orientation of the pipe, which can be ES, EN, WS or WN, where W is west, N is north, etc
-            correct_orientation (string): correct orientation of the pipe to complete the pipeline
+            abs_pos (tuple): position of the pipe in the window
+            angle (int): initial angle of the pipe, which represents the
+                rotation with respect to the original figure
+            correct_angle (int): angle in which the pipe makes the circuit
+                continuos
+            bended (bool): States whether the pipe is straight or bended
         """
-        super().__init__()
-        self.ht()
-        self.color('black')
-        self.fillcolor('green')
-        self.position = position
-        self.speed(0)
-        self.pensize(2)
-        self.penup()
-        self.goto(self.position)
-        self.orientation = orientation
-        self.correct_orientation = correct_orientation
-        draw_pipe_aux(self,self.orientation)
+        self.abs_pos = abs_pos
+        self.angle = angle
+        self.correct_angle = correct_angle
+        self.bended = bended
+        if bended:
+            self.original_image = pygame.image.load('figures/6_2_bended_pipe.png')
+        else:
+            self.original_image = pygame.image.load('figures/6_2_str_pipe.png')
+        self.image = self.original_image
+        self.rect = self.image.get_rect().move(self.abs_pos)
+
+    def draw_pipe(self, screen):
+        """Rotate the image considering its angle and display it on the screen
+
+        Args:
+            screen (pygame.Surface): window where the game is displayed.
+        """
+        self.image = pygame.transform.rotate(self.original_image, self.angle)
+        screen.blit(self.image, self.rect)
 
     def turn_pipe(self):
-        """Function that deletes the previous pipe and redraws it according to the new orientation given
+        """Rotate the image by adding 270 degrees to the pipe's angle
         """
-        self.clear()
-        draw_pipe_aux(self,self.orientation)
-    
-
-class MovableBendedPipe(MovablePipe):
-    """Class for all the pipes that are bended and can be moved. It is a child class of the just defined
-    MovablePipe class
-    """
-    cardinal_points = {
-        'WN' : 0,
-        'EN' : pi/2,
-        'ES' : pi,
-        'WS' : 3*pi/2,
-    }
-    points_cardinal = {value:key for (key,value) in cardinal_points.items()}
-
-    def __init__(self,position,orientation,correct_orientation):
-        """Initialize the class with the same values as the child class (description of arguments can be found
-        there) plus the orientation_angle, which is a number useful to determine the following orientation of the 
-        pipe once it is clicked
-        """
-        super().__init__(position,orientation,correct_orientation)
-        self.orientation_angle = self.cardinal_points[self.orientation]
-        draw_pipe_aux(self,self.orientation)
-
-    def change_orientation(self):
-        """Change the orientation of the pipe and turn it after it has been clicked
-        """
-        self.orientation_angle += pi/2
-        self.orientation_angle = self.orientation_angle - 2*pi*floor(self.orientation_angle/(2*pi))
-        self.orientation = self.points_cardinal[self.orientation_angle]
-        self.turn_pipe()
-
-
-class MovableStraightPipe(MovablePipe):
-    """Class for all the pipes that are straight and can be moved. It is a child class of the just defined
-    MovablePipe class
-    """
-
-    def change_orientation(self):
-        """Change the orientation of the pipe and turn it accordingly
-        """
-        if self.orientation == 'v':
-            self.orientation = 'h'
+        if self.bended:
+            self.angle = (self.angle+270)%360
         else:
-            self.orientation = 'v'
-        self.turn_pipe()
-
+            self.angle = (self.angle+270)%180
+        
 
 class Pipes:
-    """Class which initializes the movable pipes and is the linkage between the previous classes and the user
-    interaction
+    """Class for the creation of the dictionary of pipes, where the pipe
+    objects are kept
     """
-    mov_bend_pipes_positions = [
-        [-210,70],[-140,140],[-70,70],[210,70],[0,70],[140,140],[210,-140],[140,-70],[-70,-70],[70,0],
-        [70,-140],[-140,0],[210,0],[-70,0]
-        ]
-    mov_bend_pipes_corr_orientations = ['EN','WN','WN','WN','EN','WS','WN','WS','EN','WS','WN','WS','WS','ES']
-    mov_bend_pipes_orientations = ['WN','WS','ES','WS','WN','WN','WS','WS','ES','EN','WS','EN','WN','WN']
-    ########### TEMPORARY ONES
-    # mov_bend_pipes_positions = [[-210,70],[-140,140]]
-    # mov_bend_pipes_corr_orientations = ['EN','WN']
-    # mov_bend_pipes_orientations = ['WN','WS']
+    str_pos = [[5,0],[4,6],[1,2],[2,5],[2,6],[1,4],[0,4]]
+    str_ang = [0,0,0,0,0,90,90]
+    str_corr_ang = [90,90,90,90,90,0,0]    
+    bend_pos = [[0,2],[5,4],[2,4],[6,5],[3,2],[5,1],[6,2],[4,5],
+        [2,2],[4,3],[1,1],[1,3],[6,3],[2,3]]
+    bend_corr_ang = [180,0,180,270,180,0,270,270,270,0,270,0,0,90]
+    bend_ang = [270,0,90,0,270,270,0,0,90,180,0,180,270,270]
 
-    mov_str_pipes_positions = [
-        [-140,70],[140,210],[70,-210],[-70,-140],[-70,-210],[-140,-70],[-210,-70]
-        ]
-    mov_str_pipes_corr_orientations = ['h','h','h','h','h','v','v']
-    mov_str_pipes_orientations = ['v','v','v','v','v','h','h']
-    ########### TEMPORARY ONES
-    # mov_str_pipes_positions = [[-140,70],[140,210]]
-    # mov_str_pipes_corr_orientations = ['h','h']
-    # mov_str_pipes_orientations = ['v','v']
+    # str_pos = [[5,0],[4,6]]
+    # str_ang = [0,0]
+    # str_corr_ang = [90,90,90,90,90,0,0]    
+    # bend_pos = [[0,2],[5,4]]
+    # bend_corr_ang = [180,0]
+    # bend_ang = [270,0]
 
-    def __init__(self):
-        """Initialize the class by creating the dictionaries which include the MovablePipe objects
-        """
-        self.d_bend,self.d_bend_corr = self.create_pipes_dictionary(self.mov_bend_pipes_positions, \
-                                                                    self.mov_bend_pipes_orientations, \
-                                                                    self.mov_bend_pipes_corr_orientations, True)
-        self.d_str,self.d_str_corr = self.create_pipes_dictionary(self.mov_str_pipes_positions, \
-                                                                self.mov_str_pipes_orientations, 
-                                                                self.mov_str_pipes_corr_orientations, False)
-
-    def create_pipes_dictionary(self,positions, orientations, correct_orientations, bended):
-        """Create the dictionaries where the MovablePipe objects are stored and identified
+    def __init__(self,square_width):
+        """Initialize the class by creating the dictionaries for the straight
+        and bended pipes
 
         Args:
-            positions (list): List with the position of all the pipes that can be moved
-            orientations (list): List with the orientation of all the pipes that can be moved
-            correct_orientations (list): List with the correct orientation of all the pipes that can be moved
-            bended (bool): Variable which let us know if we are dealing with bended or straight pipes
+            square_width (int): width of the square that each pipe occupies
+        """
+        self.square_width = square_width
+        self.d_str = self.create_pipes_dictionary(
+            self.str_pos, self.str_ang, self.str_corr_ang, False
+            )
+        self.d_bend = self.create_pipes_dictionary(
+            self.bend_pos, self.bend_ang, self.bend_corr_ang, True
+            )
+
+    def create_pipes_dictionary(self, positions, ang, corr_ang, bended):
+        """Create a dictionary for the pipes, in which the pipe objects are
+        saved following an identification code. The state (representing the
+        correct rotation of the pipe) in which the pipe is is also saved in the 
+        dictionary
+
+        Args:
+            positions (list): list of positions of all the pipes
+            ang (list): list of angles of all the pipes
+            corr_ang (list): list of correct angles of all the pipes
+            bended (bool): whether the pipes are bended or not
 
         Returns:
-            dic(dictionary): dictionary which stores and identifies all the pipe objects
-            dic_corr(dictionary): dictionary which determines if all the pipe objects have the correct orientation
+            dict: the dictionary of pipe objects and its state
         """
-        i = 0; dic = {}; dic_corr = {}
+        i = 0; dic = {}
         for pos in positions:
             pipe_id = str(int(pos[0])) + '_' + str(int(pos[1]))
-            if bended:
-                dic[pipe_id] = MovableBendedPipe(positions[i],orientations[i],correct_orientations[i])
-            else:
-                dic[pipe_id] = MovableStraightPipe(positions[i],orientations[i],correct_orientations[i])
-            if dic[pipe_id].correct_orientation == dic[pipe_id].orientation:
-                dic_corr[pipe_id] = True
-            else:
-                dic_corr[pipe_id] = False
+            abs_pos = array(pos)*self.square_width
+            dic[pipe_id] = [
+                Pipe(abs_pos, ang[i], corr_ang[i], bended),
+                ang[i] == corr_ang[i]
+            ]
             i += 1
-        return dic, dic_corr
+        return dic
 
-    def redraw_clicked_pipe(self,x_pos,y_pos):
-        """Once the player clicks somewhere on the screen, this function determines if the clicked position
-        corresponds to one of the pipes that can be bended. Moreover, every time the screen is clicked, this function checks if all
-        the movable pipes are in the correct position, in which case the game is quitted.
+    def identify_pipe(self):
+        """Convert the position where the player clicked on the screen into a
+        pipe identification and check if it corresponds to a movable pipe.
+        """
+        mx, my = pygame.mouse.get_pos()
+        x_card = mx//self.square_width
+        y_card = my//self.square_width
+        pipe_id = str(x_card)+'_'+str(y_card)
+        self.turn_pipe_and_check(pipe_id, self.d_str)
+        self.turn_pipe_and_check(pipe_id, self.d_bend)
+
+    def turn_pipe_and_check(self, pipe_id, pipes_dict):
+        """Check if the position where the player has clicked on the screen 
+        corresponds to a movable pipe. If so, turn this pipe and update the
+        state of the turned pipe
 
         Args:
-            x_pos (float): x coordinate of the position clicked
-            y_pos (float): y coordinate of the position clicked
+            pipe_id (str): pipe's identification inside the dictionary
+            pipes_dict (dict): dictionary of pipes
         """
-        global square_width, ws
-        x_pipe = floor(x_pos/square_width+0.5)*square_width
-        y_pipe = floor(y_pos/square_width+0.5)*square_width
-        self.is_pipe_movable(x_pipe,y_pipe,self.mov_bend_pipes_positions,self.d_bend,self.d_bend_corr)
-        self.is_pipe_movable(x_pipe,y_pipe,self.mov_str_pipes_positions,self.d_str,self.d_str_corr)
+        if pipe_id in pipes_dict.keys():
+            pipes_dict[pipe_id][0].turn_pipe()
+            pipes_dict[pipe_id][1] = pipes_dict[pipe_id][0].correct_angle == \
+                pipes_dict[pipe_id][0].angle
 
-        if all(value == True for value in self.d_bend_corr.values()) and \
-                all(value == True for value in self.d_str_corr.values()):
-            ws.bye()
-    
-    def is_pipe_movable(self,x_pipe,y_pipe,positions,dic,dic_corr):
-        """Function that checks if the given coordinates correspond to one of the coordinates of the pipes.
-        In affirmative case, the orientation of the pipe is changed and it is redrawn. It also checks if the
-        new orientation is the correct one.
+class MainScreen():
+    """Class for the pygame screen.
+    """
+    def __init__(self, screen_size):
+        """Initialize the screen by setting its size and loading two images
 
         Args:
-            x_pipe (float): x coordinate of the position clicked centered around its square
-            y_pipe (float): y coordinate of the position clicked centered around its square
-            positions (list): List with the position of all the pipes that can be moved
-            dic (dictionary): dictionary which stores and identifies all the pipe objects
-            dic_corr(dictionary): dictionary which determines if all the pipe objects have the correct orientation
+            screen_size (list): 2D list representing the width and height of
+                the screen
         """
-        if [x_pipe,y_pipe] in positions:
-            pipe_id = str(int(x_pipe))+'_'+str(int(y_pipe))
-            m = dic[pipe_id]
-            m.change_orientation()
-            if m.orientation == m.correct_orientation:
-                dic_corr[pipe_id] = True
+        self.screen = pygame.display.set_mode(screen_size, pygame.RESIZABLE, \
+            0, 32)
+        self.bg_img = pygame.image.load('figures/6_2_pipelines_background.png')
+        self.bg_img2 = pygame.image.load('figures/6_2_pipelines_background2.png')
 
+    def initial_setup(self, pipes_dict):
+        """Show the background image and the movable pipes
+
+        Args:
+            pipes_dict (dict): dictionary of movable pipes
+        """
+        self.screen.blit(self.bg_img, (0,0))
+        for pipe in pipes_dict.values():
+            pipe[0].draw_pipe(self.screen)
+        pygame.display.update()
+
+    def new_setup(self, pipes_dict):
+        """When the player has completed the circuit, display a bigger image 
+        with a space below where the player can write the message found.
+
+        Args:
+            pipes_dict (dict): dictionary of movable pipes
+        """
+        self.screen.blit(self.bg_img2, (0,0))
+        self.screen.blit(self.img_text, self.rect)
+        for pipe in pipes_dict.values():
+            pipe[0].draw_pipe(self.screen)
+        if time() % 1 > 0.5:
+            pygame.draw.rect(self.screen, self.text_color, self.cursor)
+        pygame.display.update()
+
+    def new_configuration(self):
+        """When the player has completed the circuit, reconfigure the window so
+        that the size is increased and text objects are created where the 
+        player can write the found message.
+        """
+        pygame.display.set_mode([490,600],pygame.RESIZABLE,0,32)
+        self.text = ''
+        self.font = pygame.font.SysFont('calibri',48)
+        self.text_color = (0,0,0)
+        self.img_text = self.font.render(self.text, True, self.text_color)
+
+        self.rect = self.img_text.get_rect()
+        self.rect.topleft = (20, 550)
+        self.cursor = pygame.Rect(self.rect.topright, (3, self.rect.height))
+
+    def modify_text(self,event):
+        """Store the text that the player is writing
+
+        Args:
+            event (pygame.event): interaction of the player with the keyboard
+        """
+        if event.key == pygame.K_BACKSPACE:
+            if len(self.text)>0:
+                self.text = self.text[:-1]
+        else:
+            self.text += event.unicode
+
+        self.img_text = self.font.render(self.text, True, self.text_color)
+        self.rect.size=self.img_text.get_size()
+        self.cursor.topleft = self.rect.topright
 
 def main_pipelines():
-    """Main function for the pipelines game, where a pipeline circuit needs to be completed by changing the
-    orientation of the green pipes.
+    """Main function for the pipelines game. A circuit of pipelines is shown
+    where some of the pipes are in an incorrect position, therefore the water
+    cannot flow properly. The incorrect pipes are shown in green. The player
+    needs to turn those pipes by clicking on the screen and complete the
+    circuit.
     """
-    global square_width, ws
     screen_width = 490
-    number_lines = 7
-    square_width = screen_width/number_lines
+    square_width = 70
 
-    ws = Screen()
-    ws.screensize(screen_width,screen_width)
-    ws.bgcolor('cornflowerblue')
-    ws.bgpic('figures/6_2_pipelines_background.PNG')
-    
-    p = Pipes()
-    ws.onclick(p.redraw_clicked_pipe)
-    ws.listen()
-    ws.mainloop()
+    pygame.init()
+    screen = MainScreen([screen_width,screen_width])
+    p = Pipes(square_width)
 
-main_pipelines()
+    game = True
+    while game:
+        e = pygame.event.wait()
+        if e.type == pygame.QUIT:
+            quit()
+        if e.type == pygame.MOUSEBUTTONDOWN:
+            p.identify_pipe()
+        if all(value[1] == True for value in {**p.d_str, **p.d_bend}.values()):
+            game = False
+
+        screen.initial_setup({**p.d_str, **p.d_bend})
+
+    screen.new_configuration()
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            
+            if event.type == pygame.KEYDOWN:
+                screen.modify_text(event)
+        screen.new_setup({**p.d_str, **p.d_bend})
+
+        if screen.text.upper() == 'MEDIAS':
+            running = False
+            pygame.quit()
+
+# main_pipelines()
