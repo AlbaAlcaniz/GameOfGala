@@ -84,58 +84,61 @@ def on_closing():
     """
     exit()
 
-root = tk.Tk()
-root.geometry("+300+100")
-root.protocol("WM_DELETE_WINDOW",on_closing)
+def main():
 
-app = InitialFrame(root,'figures/0_1_help.png')
-app.mainloop()
+    root = tk.Tk()
+    root.geometry("+300+100")
+    root.protocol("WM_DELETE_WINDOW",on_closing)
 
-image_paths = [
-    # 'figures/0_2_miguelina.png',
-    # 'figures/0_3_alcanicil.png',
-    # 'figures/0_4_letsgo.png',
-    # 'figures/1_1_explanation.png',
-    # 'memory_game',
-    # 'figures/1_3_congrats.png',
-    # 'figures/2_1_explanation.png',
-    # 'futbol_game',
-    # 'figures/2_3_congrats.png',
-    # 'figures/3_1_explanation.png',
-    # 'series_game',
-    # 'figures/3_3_congrats.png',
-    # 'figures/4_1_explanation.png',
-    # 'labyrinth_game',
-    # 'figures/4_3_congrats.png',
-    # 'figures/5_1_gotit.png',
-    # 'figures/5_2_wakeupprincess.png',
-    # 'figures/5_3_failed.png',
-    # 'figures/5_4_blaiplaying.png',
-    # 'figures/6_1_explanation.png',
-    # 'pipelines_game',
-    # 'figures/6_3_congrats.png',
-    'figures/7_1_explanation.png',
-    'crossword_game',
-    'figures/7_3_congrats.png',
-    'figures/8_1_gotit.png',
-    'figures/8_2_wakeupprincess.png',
-    'figures/8_3_success.png'
-]
-for img_path in image_paths:
-    if img_path == 'memory_game':
-        main_memory()
-    elif img_path == 'futbol_game':
-        main_futbol(root)
-    elif img_path == 'series_game':
-        main_series(root)
-    elif img_path == 'labyrinth_game':
-        main_labyrinth(root)
-    elif img_path == 'pipelines_game':
-        main_pipelines()
-    elif img_path == 'crossword_game':
-        main_crossword(root)
-    else:
-        app = FigureFrame(root, img_path)
-        app.mainloop()
+    app = InitialFrame(root,'figures/0_1_help.png')
+    app.mainloop()
+
+    image_paths = [
+        # 'figures/0_2_miguelina.png',
+        # 'figures/0_3_alcanicil.png',
+        # 'figures/0_4_letsgo.png',
+        # 'figures/1_1_explanation.png',
+        # 'memory_game',
+        # 'figures/1_3_congrats.png',
+        # 'figures/2_1_explanation.png',
+        # 'futbol_game',
+        # 'figures/2_3_congrats.png',
+        # 'figures/3_1_explanation.png',
+        # 'series_game',
+        # 'figures/3_3_congrats.png',
+        # 'figures/4_1_explanation.png',
+        # 'labyrinth_game',
+        # 'figures/4_3_congrats.png',
+        # 'figures/5_1_gotit.png',
+        # 'figures/5_2_wakeupprincess.png',
+        # 'figures/5_3_failed.png',
+        # 'figures/5_4_blaiplaying.png',
+        # 'figures/6_1_explanation.png',
+        # 'pipelines_game',
+        # 'figures/6_3_congrats.png',
+        'figures/7_1_explanation.png',
+        'crossword_game',
+        'figures/7_3_congrats.png',
+        'figures/8_1_gotit.png',
+        'figures/8_2_wakeupprincess.png',
+        'figures/8_3_success.png'
+    ]
+    for img_path in image_paths:
+        if img_path == 'memory_game':
+            main_memory()
+        elif img_path == 'futbol_game':
+            main_futbol(root)
+        elif img_path == 'series_game':
+            main_series(root)
+        elif img_path == 'labyrinth_game':
+            main_labyrinth(root)
+        elif img_path == 'pipelines_game':
+            main_pipelines()
+        elif img_path == 'crossword_game':
+            main_crossword(root)
+        else:
+            app = FigureFrame(root, img_path)
+            app.mainloop()
 
 
+main()

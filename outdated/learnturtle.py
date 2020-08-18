@@ -225,14 +225,15 @@ def water_project():
 
     ws = Screen()
     ws.screensize(screen_width,screen_width)
-    ws.bgcolor('cornflowerblue')
+    # ws.bgcolor('cornflowerblue')
+    ws.bgpic('figures/0_0_map.gif')
 
     betty = Turtle()
     betty.speed(10) # Set the speed of the turtle
     betty.pensize(2) # Set the width of the objects drawn
     # betty.color('black')
-    register_shape('figures/cohete.gif')
-    betty.shape('figures/cohete.gif')
+    register_shape('figures/0_0_rocket.gif')
+    betty.shape('figures/0_0_rocket.gif')
 
     # Bubbles
     num_bubbles = 10; 
