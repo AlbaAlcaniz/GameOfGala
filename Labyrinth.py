@@ -1,7 +1,21 @@
 import pygame
+import tkinter as tk
 from tkinter import PhotoImage
 from numpy import array
-from futbol_series import MainTopLevel
+from futbolseries import MainTopLevel
+import sys, os
+from ctypes import windll
+
+
+def resource_path(relative_path):
+    """ Get the absolute path to the resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 class Car:
@@ -28,40 +42,34 @@ class Car:
         self.d = self.dis//8
         self.matrix = [
             'hiimjhimmjaiimc', 'dhjfdfhgfeiijej', 'hgeohgejdhijeig',
-            'eijfejbfhghghij', 'higfhgfeghgagho', 'fhigejkijeiiigf',
+            'eijfejbfhghghij', 'higfhgfeghgagho', 'fhigejkchliiigf',
             'fdhmjegbfhchijf', 'eigfeiigfkigalg', 'hiighjhigeijhmj',
             'ejhigeghimjffff', 'hgfhiijdbdelgff', 'kjffbhghohiiigf',
             'ffegkghgfeichio','feijejfbeijhgag','eiceilgeiigeiii'
             ]
 
-    def move(self):
+    def move(self, event):
         """Move the car considering the key clicked and the labyrinth walls.
         Each position has an assigned letter which indicates the movements that
         the car can do. These movements are limited by the walls of the 
         labyrinth.
         """
-        p = self.pos
-        letter_pos = self.matrix[p[1]][p[0]]
-        
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+        letter_pos = self.matrix[self.pos[1]][self.pos[0]]
 
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT] and letter_pos in 'gilimocj':
-                self.dirnx = -1; self.dirny = 0
-                self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
-            elif keys[pygame.K_RIGHT] and letter_pos in 'kalmehi':
-                self.dirnx = 1; self.dirny = 0
-                self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
-            elif keys[pygame.K_UP] and letter_pos in 'delfgko':
-                self.dirnx = 0; self.dirny = -1
-                self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
-            elif keys[pygame.K_DOWN] and letter_pos in 'bfhjmko':
-                self.dirnx = 0; self.dirny = 1
-                self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
-            else:
-                pass
+        if event.key == pygame.K_LEFT and letter_pos in 'gilimocj':
+            self.dirnx = -1; self.dirny = 0
+            self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+        elif event.key == pygame.K_RIGHT and letter_pos in 'kalmehi':
+            self.dirnx = 1; self.dirny = 0
+            self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+        elif event.key == pygame.K_UP and letter_pos in 'delfgko':
+            self.dirnx = 0; self.dirny = -1
+            self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+        elif event.key == pygame.K_DOWN and letter_pos in 'bfhjmko':
+            self.dirnx = 0; self.dirny = 1
+            self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
+        else:
+            pass
             
     def draw_car(self, surface):
         """Draw the car as a polygon with two grey circles as wheels
@@ -94,8 +102,7 @@ class Car:
         Args:
             surface (pygame.Surface): window where the trail is displayed
         """        
-        if self.pos not in self.trail:
-            self.trail.append(self.pos)
+        self.trail.append(self.pos)
 
         if len(self.trail) > 1:
             aux = self.dis*(array(self.trail) + 1/2)
@@ -111,23 +118,28 @@ class Window:
     def __init__(self, width, square_side):
         """Initialize the window by generating it and defining colors and
         useful parameters of the objects drawn.
+        The first lines are attributes so that the pygame window is always on
+        top.
 
         Args:
             width (int): width of the game window
             square_side (int): width of the squares of the labyrinth
         """
         self.win = pygame.display.set_mode((width, width))
+        SetWindowPos = windll.user32.SetWindowPos
+        SetWindowPos(pygame.display.get_wm_info()['window'], -1, 100, 100, 0, \
+            0, 0x0001)
         self.color_background = (255,255,255)
         self.color_lines = (0,0,0)
         self.color_arrows = (0,0,255)
         self.color_letters = (0,255,0)
         pygame.font.init()
         self.font = pygame.font.SysFont('Comic Sans MS', 30)
-        self.message = 'MAIGBIOSTFCGDCALXEU'
+        self.message = 'MAIGBDOSTFCGICALXEU'
         self.letters_pos = array([
-            (1.5,2.5),(3.5,5.5),(0.5,8.5),(0.5,13),(5.5,7.5),(5.5,1.5),
-            (6.5,3.5),(8.5,0.5),(13.5,0.5),(14.5,3.5),(10.5,4.5),(9.5,6.5),
-            (8.5,8.5),(9.5,9.5),(14.5,8.5),(13.5,10.5),(10.5,14.5),(6.5,10.5),
+            (1.5,3.5),(3.5,5.5),(3.5,8.5),(0.5,13),(5.5,7.5),(6.5,10.5),
+            (6.5,3.5),(8.5,0.5),(13.5,0.5),(14.5,3.5),(9.5,3.5),(9.5,6.5),
+            (8.5,8.5),(13.5,6.5),(14.5,8.5),(13.5,10.5),(10.5,14.5),(2.5,13.5),
             (7.5,12.5)
             ])*square_side
         self.letters_pos = self.letters_pos.astype(int)
@@ -149,8 +161,8 @@ class Window:
             [2,9,2,13],[3,1,3,2],[3,3,3,5],[3,7,3,8],[3,10,3,12],[3,14,3,15],
             [4,1,4,6],[4,7,4,9],[4,11,4,14],[5,0,5,2],[5,6,5,7],[5,9,5,10],
             [5,11,5,12],[6,1,6,6],[6,8,6,9],[6,12,6,14],[7,3,7,5],[7,6,7,7],
-            [7,9,7,12],[7,13,7,15],[8,1,8,4],[8,6,8,8],[8,10,8,11],[8,12,8,14],
-            [9,1,9,3],[9,4,9,9],[9,10,9,13],[10,0,10,1],[10,3,10,4],
+            [7,9,7,12],[7,13,7,15],[8,1,8,4],[8,5,8,8],[8,10,8,11],[8,12,8,14],
+            [9,1,9,3],[9,4,9,5],[9,6,9,9],[9,10,9,13],[10,0,10,1],[10,3,10,4],
             [10,10,10,11],[11,4,11,5],[11,6,11,7],[11,9,11,10],[11,13,11,15],
             [12,2,12,4],[12,7,12,10],[12,12,12,13],[13,1,13,2],[13,4,13,5],
             [13,9,13,11],[13,13,13,14],[14,5,14,7],[14,9,14,12],[15,0,15,14]
@@ -212,16 +224,16 @@ class Window:
         pygame.display.update()
 
 
-def won_game(master):
+def won_game(master, win):
     """When the game is won, a tkinter window appears asking for the words
     found on the way.
 
     Args:
         master (tkinter.Tk): window of the general game.
     """
-    top_labyrinth = MainTopLevel(master,'MIEDICA')
-    img = PhotoImage(file='figures/4_2_question.png')
-    img_next = PhotoImage(file='figures/0_0_next.png')
+    top_labyrinth = MainTopLevel(master,'MIEDICA', pygame_win=True)
+    img = PhotoImage(file=resource_path('figures/4_2_question.png'))
+    img_next = PhotoImage(file=resource_path('figures/0_0_next.png'))
 
     top_labyrinth.display_image(img,[0,0,2,1])
     top_labyrinth.create_text_box([1,0,1,1], 28)
@@ -237,21 +249,24 @@ def main_labyrinth(master):
     width = 450; rows = 15
     square_side = width//rows
 
+    pygame.init()
+    pygame.display.set_caption('Get the grandpas out of the labyrinth!')
+
     win = Window(width, square_side)
-    # car = Car((0,0),square_side)
-    car = Car((11,14),square_side)
+    car = Car((0,0),square_side)
 
-    clock = pygame.time.Clock()
     running = True
+    win.redraw_window(car)
     while running:
-        # The two below commands play with the velocity of the game
-        pygame.time.delay(1)
-        clock.tick(10)
-
-        car.move()
-        win.redraw_window(car)
+        events = pygame.event.get()
+        for e in events:
+            if e.type == pygame.QUIT:
+                quit()
+            if e.type == pygame.KEYDOWN:
+                car.move(e)
+                win.redraw_window(car)
 
         if car.pos == (14,14):
-            won_game(master)
+            won_game(master, win)
             running = False
-            pygame.quit()
+            pygame.display.quit()

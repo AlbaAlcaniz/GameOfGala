@@ -1,6 +1,18 @@
 import pygame
 from time import time
 from numpy import array
+import sys, os
+
+
+def resource_path(relative_path):
+    """ Get the absolute path to the resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 class Pipe():
@@ -23,9 +35,9 @@ class Pipe():
         self.correct_angle = correct_angle
         self.bended = bended
         if bended:
-            self.original_image = pygame.image.load('figures/6_2_bended_pipe.png')
+            self.original_image = pygame.image.load(resource_path('figures/6_2_bended_pipe.png'))
         else:
-            self.original_image = pygame.image.load('figures/6_2_str_pipe.png')
+            self.original_image = pygame.image.load(resource_path('figures/6_2_str_pipe.png'))
         self.image = self.original_image
         self.rect = self.image.get_rect().move(self.abs_pos)
 
@@ -144,8 +156,8 @@ class MainScreen():
         """
         self.screen = pygame.display.set_mode(screen_size, pygame.RESIZABLE, \
             0, 32)
-        self.bg_img = pygame.image.load('figures/6_2_pipelines_background.png')
-        self.bg_img2 = pygame.image.load('figures/6_2_pipelines_background2.png')
+        self.bg_img = pygame.image.load(resource_path('figures/6_2_pipelines_background.png'))
+        self.bg_img2 = pygame.image.load(resource_path('figures/6_2_pipelines_background2.png'))
 
     def initial_setup(self, pipes_dict):
         """Show the background image and the movable pipes
@@ -215,6 +227,7 @@ def main_pipelines():
     square_width = 70
 
     pygame.init()
+    pygame.display.set_caption('Connect the pipes!')
     screen = MainScreen([screen_width,screen_width])
     p = Pipes(square_width)
 
@@ -243,6 +256,6 @@ def main_pipelines():
 
         if screen.text.upper() == 'MEDIAS':
             running = False
-            pygame.quit()
+            pygame.display.quit()
 
 # main_pipelines()
