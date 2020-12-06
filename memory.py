@@ -3,6 +3,18 @@ from time import time
 from math import prod
 from random import shuffle
 from numpy import array, append
+import sys, os
+
+
+def resource_path(relative_path):
+    """ Get the absolute path to the resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 class Card():
@@ -24,7 +36,7 @@ class Card():
         self.border_width = 3
         self.margin = 2
         self.number = number
-        self.font = pygame.font.SysFont('ubuntu',70)
+        self.font = pygame.font.SysFont('calibri',70)
         self.text = self.font.render(str(self.number), True, self.border_color)
         self.text_center_x = int(self.pos[0]+cards_size[0]/2)
         self.text_center_y = int(self.pos[1]+cards_size[1]/2)
@@ -65,8 +77,8 @@ class Card():
 class MainScreen():
     def __init__(self,screen_size):
         self.screen = pygame.display.set_mode(screen_size,pygame.RESIZABLE,0,32)
-        self.bg_img = pygame.image.load('figures/1_2_winningpicture.jpg')
-        self.bg_img2 = pygame.image.load('figures/1_2_winningpicture2.jpg')
+        self.bg_img = pygame.image.load(resource_path('figures/1_2_winningpicture.jpg'))
+        self.bg_img2 = pygame.image.load(resource_path('figures/1_2_winningpicture2.jpg'))
 
     def initial_setup(self,card_dict):
         pygame.display.update()
@@ -106,8 +118,8 @@ class MainScreen():
 
 class Deck():
     def __init__(self,screen_size):
-        # cards_distribution = [6,3]
-        self.cards_distribution = [2,1]
+        self.cards_distribution = [6,3]
+        # self.cards_distribution = [2,1]
         self.number_of_cards = prod(self.cards_distribution)
         self.cards_size = [
             int(x/y) for x, y in zip(screen_size,self.cards_distribution)
@@ -162,26 +174,30 @@ def main_memory():
     screen_size = [640,426]
 
     pygame.init()
+    pygame.display.set_caption('Remove the cards!')
     deck_cards = Deck(screen_size)
     screen = MainScreen(screen_size)
 
-    while True:
-        e = pygame.event.wait()
-        if e.type == pygame.MOUSEBUTTONDOWN:
-            break
-        if e.type == pygame.QUIT:
-            quit()
-        screen.initial_setup(deck_cards.card_dict)
+    # while True:
+    #     e = pygame.event.wait()
+    #     if e.type == pygame.MOUSEBUTTONDOWN:
+    #         break
+    #     if e.type == pygame.QUIT:
+    #         quit()
+    screen.initial_setup(deck_cards.card_dict)
 
+    first = True
     game = True
     while game:
+        if first:
+            screen.initial_setup(deck_cards.card_dict)        
+            first = False
         e = pygame.event.wait()
         if e.type == pygame.QUIT:
             quit()
         if e.type == pygame.MOUSEBUTTONDOWN:
             deck_cards.identify_card(screen)
             screen.initial_setup(deck_cards.card_dict)
-
         if len(deck_cards.card_dict) == 0:
             game = False
             
@@ -199,7 +215,4 @@ def main_memory():
 
         if screen.text.upper() == 'FERNAN':
             running = False
-            pygame.quit()
-
-
-# main_memory()
+            pygame.display.quit()

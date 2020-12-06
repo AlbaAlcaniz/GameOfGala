@@ -1,5 +1,18 @@
 import tkinter as tk
 from tkinter import messagebox
+import sys, os
+
+
+def resource_path(relative_path):
+    """ Get the absolute path to the resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 
 class MainWindow():
     """Main class for constructing the tkinter widgets on a tkinter window 
@@ -40,7 +53,7 @@ class MainWindow():
         """
         self.let_dic = {}
         for pos in let_pos:
-            if pos[1] == 5:
+            if pos[1] == 7:
                 bg_color = '#ccccff'
             else:
                 bg_color = '#ffffff'
@@ -109,8 +122,9 @@ class MainWindow():
         """Generate a warning message in case the message is not correct"""
         root = tk.Toplevel(self.top)
         root.attributes('-topmost', True)
+        root.geometry("+650+100")
         root.withdraw()
-        messagebox.showinfo('Oh oh', 'Mensaje incorrecto. Intentalo otra vez!')
+        messagebox.showinfo('Oh oh', 'Wrong message. Try again!')
         try:
             root.destroy()
         except:
@@ -125,14 +139,16 @@ class MainWindow():
         message = 'NOCHES'
         written_message = ''
         for i in range(0,6):
-            let_id = '['+str(i)+', 5]'
+            let_id = '['+str(i)+', 7]'
             written_message += self.let_dic[let_id].get().upper()
 
         if message == written_message:
             self.top.destroy()
             self.top.quit()
         else:
-            message_box()
+            self.message_box()
+            self.top.attributes('-topmost', True)
+            self.top.attributes('-topmost', False)
 
 def main_crossword(master):
     """Function for the crossword, based on key concepts from balloons. By
@@ -144,22 +160,21 @@ def main_crossword(master):
     w = MainWindow(master)
     
     descriptions = [
-        'Decide la dirección del globo',
-        'Ni avión, ni helicóptero, ni zepelín',
-        'Donde guardas la fruta y se sube la gente',
-        'Vehículo que te rescata por tierra',
-        'Calienta el aire para poder volar',
-        'Parecen hechas de algodón'
+        'Not a plane, nor a helicopter, neither a zeppelin',
+        'What ties the balloon to the basket?',
+        'Vehicle that rescues you once you land',
+        'How is the air inside the balloon?',
+        'It heats the air so the balloon can fly',
+        'They look like cotton balls'
     ]
 
     let_pos = [
-        [0, 2],[0, 3],[0, 4],[0, 5],[0, 6],[0, 7],[1, 1],[1, 2],[1, 3],[1, 4],
-        [1, 5],[2, 5],[2, 6],[2, 7],[2, 8],[2, 9],[3, 2],[3, 3],[3, 4],[3, 5],
-        [3, 6],[4, 3],[4, 4],[4, 5],[4, 6],[4, 7],[5, 1],[5, 2],[5, 3],[5, 4],
-        [5, 5]
+        [0, 1],[0, 2],[0, 3],[0, 4],[0, 5],[0, 6],[0, 7],[1, 6],[1, 7],[1, 8],
+        [1, 9],[2, 7],[2, 8],[2, 9],[3, 7],[3, 8],[3, 9],[4, 4],[4, 5],[4, 6],
+        [4, 7],[5, 2],[5, 3],[5, 4],[5, 5],[5, 6],[5, 7]
     ]
 
-    img_next = tk.PhotoImage(file='figures/0_0_next.png')
+    img_next = tk.PhotoImage(file=resource_path('figures/0_0_next.png'))
 
     w.create_descriptions(descriptions,16)
     w.create_entries(let_pos, 2, 18)
